@@ -1,0 +1,96 @@
+---
+title: "pdf"
+format: html
+editor: visual
+---
+
+```{r, echo = FALSE}
+library(ggplot2)
+```
+
+
+
+1)  
+
+$$T(t) = T_{amb}+(T_i-T_{amb})e^{-rt}$$ 
+$$\frac{dT(t)}{dt} =-r(T_i-T_{amb})e^{-rt}$$
+$$\frac{dT(t)}{dt} =-r(T_i-T_{amb})e^{-rt}+rT_{amb}-rT_{amb}$$
+$$\frac{dT(t)}{dt} =-r(T_{amb}+(T_i-T_{amb})e^{-rt})+rT_{amb}$$
+$$\frac{dT(t)}{dt} =-rT(t)+rT_{amb}$$ 
+$$\frac{dT(t)}{dt} =r(T_{amb}-T(t))$$
+
+2)
+
+```{r, echo = FALSE}
+T_fun = function(t_amb, t_i, r, t) t_amb + (t_i - t_amb) * exp(-r * t) 
+T_valores_1 = T_fun(23, 37, .1, seq(0,75,1))
+T_valores_2 = T_fun(23, 37, .3, seq(0,75,1))
+datos_T = data.frame(x = seq(0,75,1), y = c(T_valores_1, T_valores_2), r = rep(c("0.1", "0.3"), each = 76)) 
+
+ggplot(datos_T) + geom_line(aes(x = x, y = y, color = r))
+```
+
+
+r representa la velocidad de enfriamiento o algo asi.
+
+3)
+
+
+```{r, echo=FALSE}
+seq_r = seq(.1,.5,.001)
+valores_r = T_fun(22, 37, seq_r, 25)
+r = seq_r[which(valores_r <= 22.1 & valores_r > 22.01)]
+
+```
+
+Vemos cuales son los valores de r tal que la funcion se solapa con la temperatura ambiente.
+
+37-22
+
+4horas->35
+12horas->27
+25horas->22
+
+4 horas- 0.5Cº/h
+8 horas- 1Cº/h
+final- 0.5Cº~0.25Cº/h
+
+
+4)
+$$T(t)-T_{amb} = T_{diff}e^{-rt}$$
+
+$$T_{diff} = T_i-T_{amb}$$
+
+$$ln(T(t)-T_{amb}) = ln(T_{diff}e^{-rt}) = ln(T_{diff})+ln(e^{-rt}) = ln(T_{diff})-rt$$
+
+```{r, echo = FALSE}
+ln_T_valores_1 = log(T_valores_1-23)
+ln_T_valores_2 = log(T_valores_2-23)
+datos_ln_T = data.frame(x = seq(0,75,1), y = c(ln_T_valores_1, ln_T_valores_2), r = rep(c("0.1", "0.3"), each = 76)) 
+
+ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r))
+```
+
+
+
+$$F(t) = \beta_0 + \beta_1t $$ donde $ \beta_0 = ln(T_{diff})$ y $\beta_1 = -r$
+
+Esta función representa la temperatura del logarimo natural de la diferencia entre la temperatura del cuerpo en el momento t y la temperatura ambiente.
+
+Cuando el tiempo es 0 la funcion toma el valor del logaritmo natural de la diferencia entre la temperatura inicial del cuerpo y la temperatura ambiente.
+
+Cada una hora el logaritmo natural de la diferencia de temperatura del cuerpo menos la temperatura ambiente decrece en r Cº.
+
+beta1 ~ normal(0.245,.03) o algo asi
+
+beta0 ~ normal(ln(14.5), ln(.5/3))
+
+
+
+```{r, echo = FALSE}
+mu = rnorm(1000,algo,algo)+rnorm(1000,algo,algo)*t
+sigma = rnorm(1000,algo,algo)
+y = rnorm(1000, mu, sigma)
+hist(y)
+```
+
