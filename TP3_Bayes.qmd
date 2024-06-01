@@ -55,18 +55,21 @@ Docentes: Ignacio Evangelista - Tomás Capretto
 \newpage
 
 
+## Prologo
+
+Era una pacifica madrugada de miércoles en Cordoba, cuando suena un telefono en la cercania. Letargico, luego de dejar sonando unos segundos el celular, Guido abre los ojos desganadamente y comprueba quien es la persona que esta irrumpiendo en su sueño. "-¿El capitan?" piensa Guido dudosamente. Al atender el movil se escucha, "-LLego la hora de tu primer trabajo Guido. Preparate que en 10 minutos te pasan a buscar para ir a Salsipuedes." Como si todavia no hubiese entendido que esta pasando, lentamente Guido salio de su lecho para vestirse con su preciado nuevo uniforme de la policía científica de Córdoba, recien cuando el vehiculo llego pudo Guido entender lo que habia pasado. "-¡Por fin! Mi primer trabajo." penso guido alegremente. Pero no estaba preparado para afrontar lo que se iba a encontrar.
+
+
 # Introducción
 
-Era una madrugada en Cordoba, cuando suena el telefono en la mesada. Al atender, Guido 
+Se suele decir que la muerte es certera pero... ¿es precisa? Acompaña a Guido, un estudiante de estadistica, que como parte de su nuevo trabajo tiene que, con la información que posee, estimar a que hora se produjo un asesinato en la ciudad de Salsipuedes.
 
 
-
-
-En este trabajo se comentara cuales son los pasos que Guido realiza para poder determinar la hora de muerte de Sergio.
-
-
-## Paso 1: Entender la metodologia
+## Capitulo 1: Entender la metodologia
   
+Al llegar, Guido presencio el caos de la escena instantaneamente. Muebles volcados y destrozados. Utensilios de cocina desparramados y manchados. La brisa matutina se abría paso por los vidrios estallados y la débil luz de los móviles policiales dejaban ver que el cuerpo de Sergio Contreras yacía en un charco de sangre hacia un extremo del salón. Sorprendentemente, recordando lo que estudio, salio de su estupor y fue a preguntar los hechos del caso.
+
+
 Uno de los metodos que se utiliza en la medicina forense para poder estimar la hora del fallecimiento, es el estudio de la temperatura corporal. Cuando alguien fallece, la temperatura del cuerpo ira disminuyendo hasta que este llege a un equilibrio termico con la temperatura ambiente. Dicho proceso se lo conoce como *enfriamiento postmortem* o *algor mortis*. Pero el ritmo al que el cuerpo pierde calor no es constante. Dicho cambio, tambien conocido como ecuación diferencial, satisface la siguiente ley:
 
 $$\frac{\mathrm{d}T(t)}{\mathrm{d}t} = r [T_{\text{amb}} - T(t)]$$
@@ -116,6 +119,13 @@ datos_ln_T = data.frame(x = seq(0,75,1), y = c(ln_T_valores_1, ln_T_valores_2), 
 
 ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r))
 ```
+
+
+Luego de observar los 
+
+
+
+
 
 
 
