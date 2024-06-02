@@ -53,7 +53,7 @@ Docentes: Ignacio Evangelista - Tomás Capretto
 
 \RaggedRight
 \newpage
-```{r, echo = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(ggplot2)
 library(rstan)
@@ -93,7 +93,7 @@ $$\frac{dT(t)}{dt} =r(T_{amb}-T(t))$$
 Si $T_{amb}=23$ y $T_{ini}=37$ la forma de la función es la siguiente:
 
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
 T_fun = function(t_amb, t_i, r, t) t_amb + (t_i - t_amb) * exp(-r * t) 
 T_valores_1 = T_fun(23, 37, .1, seq(0,75,1))
 T_valores_2 = T_fun(23, 37, .3, seq(0,75,1))
@@ -129,10 +129,11 @@ ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r))
 ## Capitulo 2: 
 
 La temperatura de Sergio luego de fallecer depende de 4 aspectos:
-- La temperatura de su cuerpo al momento de morir (ºC).
-- La temperatura ambiente (ºC).
-- La velocidad en la que la temperatura del cuerpo cae.
-- A que hora fallecio.
+
+-   $\beta_0$: la temperatura de su cuerpo al momento de morir (ºC).
+-   La temperatura ambiente (ºC).
+-   $\beta_1$: la velocidad en la que la temperatura del cuerpo cae.
+-   $h_m$: a que hora fallecio.
 
 Ademas, hay que tener en cuenta el error de medición que pueda tener el equipo que se use para medir la temperatura.
 
@@ -140,9 +141,12 @@ Esto se explicita en el siguiente modelo
 
 
 $$Y_i|\mu_i,\sigma \sim Normal(\mu_i,\sigma)$$
-Donde: $\mu_i = \beta_0 + \beta_1  t_i $
+Donde: $\mu_i = \beta_0 + \beta_1  t_i$
 
-Se conoce la temperatura ambiente, siendo $T_{amb}=22 ºC$, pero se desconocen los valores exactos de los demas parametros pero se tiene información sobre ellos.
+Se conoce la temperatura ambiente, siendo $T_{amb}=22$ºC, pero se desconocen los valores exactos de los demas parametros pero se tiene información sobre ellos.
+
+
+## Tmp beta 0 
 
 Se sabe que la temperatura del cuerpo de una persona sana varia entre 36 y 37.5 ºC, por lo que $\beta_0 = ln(T_{diff})$ tiene que estar entre `r log(36-22)` y `r log(37.5-22)`. Una distribución que represente lo requerido es:
 
@@ -151,29 +155,77 @@ beta0_sigma = (log(37.5-22)-log(36-22))/6
 beta0_mu = log(36.75-22)
 ```
 
-$\beta_0 \sim Normal(2.69,0.017)$
+$$\beta_0 \sim Normal(2.69,0.017)$$
+```{r, echo = FALSE}
+seq_beta0 = seq(log(36-22),log(37.5-22),length.out = 1000)
+df_beta0 = data.frame(y = dnorm(seq_beta0, 2.69, 0.017), x = seq_beta0)
+ggplot(df_beta0) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta0", breaks = round(seq(log(36-22),log(37.5-22),length.out = 7),3)) + scale_y_continuous(name = "Densidad")
+
+```
+
+
+## r
+
 
 La velocidad a la que decrece la temperatura de los cuerpos humanos cuando mueren es un tema ya estudiado en la medicina forense. 
 
 "Greggio y Valtorta(1998) han demostrado que el descenso de la temperatura corporal post-mortem se realiza mediante un *plateau* inicial de una 3-4 horas de duración, con una caída promedio de 0.5º C por hora, un decrecimiento lineal que sobrepasa las 12 hs de la muerte con un pérdida promedio de 1º C cada hora y luego un *plateau* final, con descenso lento, de 0,5º o 0,25º por hora hasta igualar a la temperatura ambiente." Fraraccio, J(2021). *Medicina forense contemporanea*. Dosyuna ediciones argentinas.
 
-Basandose en este extracto, se tarda aproximadamente 22 horas en que un cuerpo llege a una temperatura abiente de 22ºC. Por lo que se ajusta 
+Basandose en este extracto, se tarda aproximadamente 22 horas en que un cuerpo llege a una temperatura abiente de 22ºC, por lo que se calcula el valor de $T(t)$ en $t=22$ para varios valores de $r$ y temperaturas del cuerpo. Se llega a que: 
+
+$$\beta_1 \sim Normal(-0.248,0.018)$$
+
+```{r, echo = FALSE}
+r_seq = seq(0.1,0.4,.001)
+t_ini = seq(36, 37.5, 0.1)
+T_r = numeric()
+T_r_label = numeric()
+contador = 0
+for (i in r_seq) {
+  for (j in t_ini) {
+    contador = contador + 1
+    T_r_label[contador] = i
+    T_r[contador] = T_fun(22, j, i, 22)
+  }
+}
+
+
+r_mu = -(unique(T_r_label[which(T_r > 22.02 & T_r <= 22.2)])[109]+unique(T_r_label[which(T_r > 22.02 & T_r <= 22.2)])[1])/2
+
+r_sigma = -(unique(T_r_label[which(T_r > 22.02 & T_r <= 22.2)])[109]-unique(T_r_label[which(T_r > 22.02 & T_r <= 22.2)])[1])/6
+
+seq_beta1 = seq(-0.19,-0.31,length.out = 1000)
+df_beta1 = data.frame(y = dnorm(seq_beta1, -0.248, 0.018), x = seq_beta1)
+ggplot(df_beta1) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta1", breaks = round(seq(r_mu-3*r_sigma,r_mu+3*r_sigma,length.out = 7),3))  + scale_y_continuous(name = "Densidad")
 
 
 
 
-
+```
 
 
 Como $t_i$ depende de cuando la persona murio y no se tiene dicha información se le tiene que asignar una distribución a priori. Entonces se puede separar $t_i$ en $t_i = h_i-h_m$.
 
 Entonces: $\mu_i = \beta_0 + \beta_1  (h_i-h_m)$
 
+$$h_m \sim -1*Gama(7,0.08)+5.883$$
+
+Al investigar sobre el error de medición para la temperatura, el error maximo de un termometro es de 0.5 ºC entonces se calcula la diferencia entre el logaritmo natural de una temperatura $T$ y la temperatura con su error maximo:
+$$ln(T+0.5)-ln(T) = ln(\frac{T+0.5}{T}) = ln(1+\frac{0.5}{T})$$
+Y esta expresion sera maxima cuando T sea minimo, es decir, $T=22$. Entonces,
+
+$$ln(1+\frac{0.5}{22}) = 0.022 $$
+Por lo tanto, $$\sigma \sim Normal_+(0,0.007)$$ 
 
 
+```{r, echo = FALSE}
+sigma_sigma = log(45/44)/3
+seq_sigma = seq(-0.023,0.023,length.out = 1000)
+df_sigma = data.frame(y = 2*abs(dnorm(seq_sigma, 0, 0.007)), x = abs(seq_sigma))
+ggplot(df_sigma) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Sigma", breaks = round(seq(0,sigma_sigma*3,length.out = 4),3))  + scale_y_continuous(name = "Densidad")
 
+```
 
-$$\sigma \sim Normal_+(0,1)$$
 
 
 
@@ -184,6 +236,8 @@ ln_T_valores_2 = log(T_valores_2-23)
 datos_ln_T = data.frame(x = seq(0,75,1), y = c(ln_T_valores_1, ln_T_valores_2), r = rep(c("0.1", "0.3"), each = 76)) 
 
 ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r))
+
+
 ```
 
 $$F(t) = \beta_0 + \beta_1t $$ donde \$ \beta*0 = ln(T*{diff})\$ y $\beta_1 = -r$
@@ -270,8 +324,6 @@ ggplot(sigma_data) + geom_line(aes(x = exp(x), y = y))
 ```
 
 
-Citas:
 
-1. libro
   
   
