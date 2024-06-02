@@ -1,3 +1,11 @@
+functions {
+  real gamma_custom(vector x){
+    real lpdf;
+    lpdf = -1*gamma_lpdf(1 ./ x | 7, 0.008)+5.883;
+    return lpdf;
+}
+
+
 data {
   int<lower=0> N;
   vector[N] y;
@@ -26,4 +34,8 @@ generated quantities {
     log_likelihood[i] = normal_lpdf(t[i] | mu[i], sigma);
   }
 }
+
+
+
+
 

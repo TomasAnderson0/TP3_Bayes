@@ -33,7 +33,7 @@ LICENCIATURA EN ESTADÍSTICA
 Trabajo Práctico 2
 \vspace{1cm}
 \begin{center}
-    \includegraphics[width=.5\linewidth]{foto_1.png}
+
 \end{center}
 \vspace{2cm}
 Autores: Tomás Anderson - Alejo Vaschetti - Manuel Moresi
@@ -53,8 +53,11 @@ Docentes: Ignacio Evangelista - Tomás Capretto
 
 \RaggedRight
 \newpage
-
-
+```{r, echo = FALSE}
+library(tidyverse)
+library(ggplot2)
+library(rstan)
+```
 ## Prologo
 
 Era una pacifica madrugada de miércoles en Cordoba, cuando suena un telefono en la cercania. Letargico, luego de dejar sonando unos segundos el celular, Guido abre los ojos desganadamente y comprueba quien es la persona que esta irrumpiendo en su sueño. "-¿El capitan?" piensa Guido dudosamente. Al atender el movil se escucha, "-LLego la hora de tu primer trabajo Guido. Preparate que en 10 minutos te pasan a buscar para ir a Salsipuedes." Como si todavia no hubiese entendido que esta pasando, lentamente Guido salio de su lecho para vestirse con su preciado nuevo uniforme de la policía científica de Córdoba, recien cuando el vehiculo llego pudo Guido entender lo que habia pasado. "-¡Por fin! Mi primer trabajo." penso guido alegremente. Pero no estaba preparado para afrontar lo que se iba a encontrar.
@@ -74,21 +77,20 @@ Uno de los metodos que se utiliza en la medicina forense para poder estimar la h
 
 $$\frac{\mathrm{d}T(t)}{\mathrm{d}t} = r [T_{\text{amb}} - T(t)]$$
 
-donde $T_{amb}$ es la temperatura ambiente, $r$ una constante positiva que indica la rapidez del *algor mortis* y $T(t)$ es la función que describe la temperatura del cuerpo en función del tiempo.
+donde $T_{amb}$ es la temperatura ambiente, $r$ una constante positiva que indica la rapidez del *algor mortis* y $T(t)$ es la función que describe la temperatura del cuerpo en función del tiempo donde $t=0$ cuando la persona muere.
 
 Una función que satisface la ecuación diferencial es: 
 
 $$T(t) = T_{amb}+(T_i-T_{amb})e^{-rt}$$ 
 Donde $T_i$ es la temperatura inicial del cuerpo. Dicha relación se demuestra de la siguiente manera:
 $$\frac{dT(t)}{dt} =-r(T_i-T_{amb})e^{-rt}$$
-
 $$\frac{dT(t)}{dt} =-r(T_i-T_{amb})e^{-rt}+rT_{amb}-rT_{amb}$$ 
 $$\frac{dT(t)}{dt} =-r(T_{amb}+(T_i-T_{amb})e^{-rt})+rT_{amb}$$ 
 $$\frac{dT(t)}{dt} =-rT(t)+rT_{amb}$$ 
 $$\frac{dT(t)}{dt} =r(T_{amb}-T(t))$$
 
 
-Si $T_{amb}=23$ y $T_{ini}=23$ la forma de la función es la siguiente:
+Si $T_{amb}=23$ y $T_{ini}=37$ la forma de la función es la siguiente:
 
 
 ```{r, echo = FALSE}
@@ -101,15 +103,18 @@ ggplot(datos_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuous(n
 ``` 
 
   
-Para simplificar el problema, no se utiliza la función $T(t)$ sino la $ln(T(t)-T_{amb})$ ya que esta tiene forma lineal.
+Para simplificar el problema, no se utiliza la función $T(t)$ sino $ln(T(t)-T_{amb})$ ya que esta tiene forma lineal.
+$$
+\begin{array}{lrrr}
+ T(t)-T_{amb} = T_{diff}e^{-rt} & Donde: & T_{diff} = T_i-T_{amb}
+\end{array}
+$$
 
-$$T(t)-T_{amb} = T_{diff}e^{-rt}$$
-Donde: $T_{diff} = T_i-T_{amb}$
 
-$$ln(T(t)-T_{amb}) = ln(T_{diff}e^{-rt}) = ln(T_{diff})+ln(e^{-rt}) = ln(T_{diff})-rt$$
+$$Y(t)=ln(T(t)-T_{amb}) = ln(T_{diff}e^{-rt}) = ln(T_{diff})+ln(e^{-rt}) = ln(T_{diff})-rt$$
 
-Dicha función esta representada por la ecuacción de una recta $\beta_0+\beta_1*x$
-donde la ordenada al origen representa . 
+Dicha función esta representada por la ecuacción de una recta $y=\beta_0+\beta_1*x$
+donde $\beta_0$ es el logaritmo neperiano de la diferencia de temperatura del cuerpo inicial y de la ambiente. $\beta_1$ representa la velocidad de cambio de $Y(t)$.
 
 
 ```{r, echo = FALSE}
@@ -121,61 +126,57 @@ ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r))
 ```
 
 
-Luego de observar los 
+## Capitulo 2: 
+
+La temperatura de Sergio luego de fallecer depende de 4 aspectos:
+- La temperatura de su cuerpo al momento de morir (ºC).
+- La temperatura ambiente (ºC).
+- La velocidad en la que la temperatura del cuerpo cae.
+- A que hora fallecio.
+
+Ademas, hay que tener en cuenta el error de medición que pueda tener el equipo que se use para medir la temperatura.
+
+Esto se explicita en el siguiente modelo
 
 
+$$Y_i|\mu_i,\sigma \sim Normal(\mu_i,\sigma)$$
+Donde: $\mu_i = \beta_0 + \beta_1  t_i $
 
+Se conoce la temperatura ambiente, siendo $T_{amb}=22 ºC$, pero se desconocen los valores exactos de los demas parametros pero se tiene información sobre ellos.
 
-
-
-
-
-  
-```{r, echo = FALSE}
-library(tidyverse)
-library(ggplot2)
-library(rstan)
-```
-
-1)  
-
-$$T(t) = T_{amb}+(T_i-T_{amb})e^{-rt}$$ $$\frac{dT(t)}{dt} =-r(T_i-T_{amb})e^{-rt}$$ $$\frac{dT(t)}{dt} =-r(T_i-T_{amb})e^{-rt}+rT_{amb}-rT_{amb}$$ $$\frac{dT(t)}{dt} =-r(T_{amb}+(T_i-T_{amb})e^{-rt})+rT_{amb}$$ $$\frac{dT(t)}{dt} =-rT(t)+rT_{amb}$$ $$\frac{dT(t)}{dt} =r(T_{amb}-T(t))$$
-
-2)  
+Se sabe que la temperatura del cuerpo de una persona sana varia entre 36 y 37.5 ºC, por lo que $\beta_0 = ln(T_{diff})$ tiene que estar entre `r log(36-22)` y `r log(37.5-22)`. Una distribución que represente lo requerido es:
 
 ```{r, echo = FALSE}
-T_fun = function(t_amb, t_i, r, t) t_amb + (t_i - t_amb) * exp(-r * t) 
-T_valores_1 = T_fun(23, 37, .1, seq(0,75,1))
-T_valores_2 = T_fun(23, 37, .3, seq(0,75,1))
-datos_T = data.frame(x = seq(0,75,1), y = c(T_valores_1, T_valores_2), r = rep(c("0.1", "0.3"), each = 76)) 
-
-ggplot(datos_T) + geom_line(aes(x = x, y = y, color = r))
+beta0_sigma = (log(37.5-22)-log(36-22))/6
+beta0_mu = log(36.75-22)
 ```
 
-r representa la velocidad de enfriamiento o algo asi.
+$\beta_0 \sim Normal(2.69,0.017)$
 
-3)  
+La velocidad a la que decrece la temperatura de los cuerpos humanos cuando mueren es un tema ya estudiado en la medicina forense. 
 
-```{r, echo=FALSE}
-seq_r = seq(.1,.5,.001)
-valores_r = T_fun(22, 37, seq_r, 25)
-r = seq_r[which(valores_r <= 22.1 & valores_r > 22.01)]
+"Greggio y Valtorta(1998) han demostrado que el descenso de la temperatura corporal post-mortem se realiza mediante un *plateau* inicial de una 3-4 horas de duración, con una caída promedio de 0.5º C por hora, un decrecimiento lineal que sobrepasa las 12 hs de la muerte con un pérdida promedio de 1º C cada hora y luego un *plateau* final, con descenso lento, de 0,5º o 0,25º por hora hasta igualar a la temperatura ambiente." Fraraccio, J(2021). *Medicina forense contemporanea*. Dosyuna ediciones argentinas.
 
-```
+Basandose en este extracto, se tarda aproximadamente 22 horas en que un cuerpo llege a una temperatura abiente de 22ºC. Por lo que se ajusta 
 
-Vemos cuales son los valores de r tal que la funcion se solapa con la temperatura ambiente.
 
-37-22
 
-4horas-\>35 12horas-\>27 25horas-\>22
 
-4 horas- 0.5Cº/h 8 horas- 1Cº/h final- 0.5Cº\~0.25Cº/h
 
-4)  $$T(t)-T_{amb} = T_{diff}e^{-rt}$$
 
-$$T_{diff} = T_i-T_{amb}$$
 
-$$ln(T(t)-T_{amb}) = ln(T_{diff}e^{-rt}) = ln(T_{diff})+ln(e^{-rt}) = ln(T_{diff})-rt$$
+Como $t_i$ depende de cuando la persona murio y no se tiene dicha información se le tiene que asignar una distribución a priori. Entonces se puede separar $t_i$ en $t_i = h_i-h_m$.
+
+Entonces: $\mu_i = \beta_0 + \beta_1  (h_i-h_m)$
+
+
+
+
+
+$$\sigma \sim Normal_+(0,1)$$
+
+
+
 
 ```{r, echo = FALSE}
 ln_T_valores_1 = log(T_valores_1-23)
@@ -193,17 +194,15 @@ Cuando el tiempo es 0 la funcion toma el valor del logaritmo natural de la difer
 
 Cada una hora el logaritmo natural de la diferencia de temperatura del cuerpo menos la temperatura ambiente decrece en r Cº.
 
-beta1 \~ normal(0.245,.03) o algo asi
+beta1 ~ normal(0.245,.03) o algo asi
 
-beta0 \~ normal(ln(14.5), ln(.5/3))
+beta0 ~ normal(ln(14.5), ln(.5/3))
 
 
 
 
 
 ```{r}
-
-
 x = rnorm(3,1,1)
 log(45/44)/3
 ```
@@ -216,7 +215,6 @@ $$ln(1+\frac{0.5}{22}) = 0.022 $$
 
 
 ```{r, echo = FALSE}
-
 b0 = rnorm(1000, 2.69, 0.017)
 b1 = rnorm(1000, -0.2465, 0.015)
 sigma = abs(rnorm(1000, 0, 0.007))
@@ -251,7 +249,6 @@ v2 = mean(c(t1[975],t1[976]))
 b0 = rnorm(1000, 2.69, 0.017)
 b1 = rnorm(1000, -0.2465, 0.015)
 sigma = abs(rnorm(1000, 0, 0.007))
-
 
 b0_data = data.frame(y = dnorm(seq(2.6, 2.78, length.out = 1000), 2.69, 0.017), x = seq(2.6, 2.78, length.out = 1000))
 
