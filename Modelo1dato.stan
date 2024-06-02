@@ -11,9 +11,9 @@ parameters {
 }
 model {
   b0 ~ normal(2.69, 0.017);
-  b1 ~ normal(-0.2465, 0.015);
-  sigma ~ normal(0, 0.01);
-  -(x - 5.883) ~ gamma(7, 0.08);
+  b1 ~ normal(-0.248, 0.018);
+  sigma ~ normal(0, 0.007);
+  -(x - 5.883) ~ gamma(5, 0.1);
   y ~ normal(b0 + b1 * (t - x), sigma);
 }
 // generated quantities {
