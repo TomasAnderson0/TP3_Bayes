@@ -1,5 +1,6 @@
 library(ggplot2)
 library(rstan)
+library(loo)
 set.seed(1997)
 beta0 = rnorm(1000, mean = 2.69, sd = 0.017)
 beta1 = rnorm(1000, mean = -0.2465, sd = 0.015)
@@ -34,7 +35,7 @@ ggplot(grafico) + aes(x = x1, y = (exp(y) + 22), group = muestra) + geom_line(al
                                 "20:00", "22:00", "00:00"),
                      name = "Hora") +
   scale_y_continuous(name = "Temperatura (°C)", breaks = c(37.5, 36, 35, 32.5, 30, 27.5, 25, 22),
-                     limits = c(22, 38)) + guide()
+                     limits = c(22, 38))
 
 
 dgamma(seq(0,5, length.out = 100), shape = 2, scale = 0.5)
@@ -88,6 +89,8 @@ modelo2obs <- stan(
   iter = 10000
 )
 
+modelo2obs
+
 traceplot(modelo2obs)
 posterior2 <- data.frame(extract(modelo2obs, c("b0", "b1", "x" ,"sigma")), observaciones = "2 observaciones")
 posterior12 <- rbind(posterior1, posterior2)
@@ -113,6 +116,10 @@ modelo3obs <- stan(
   iter = 10000
 )
 
+loo(modelo3obs)
+
+loo_compare(loo(modelo2obs),loo(modelo3obs))
+
 traceplot(modelo3obs)
 modelo3obs
 posterior3 <- data.frame(extract(modelo3obs, c("b0", "b1", "x" ,"sigma")), observaciones = "3 observaciones")
@@ -121,3 +128,29 @@ ggplot(posterior23) + aes(x = b0, fill = observaciones) + geom_density(alpha = 0
 ggplot(posterior23) + aes(x = b1, fill = observaciones) + geom_density(alpha = 0.5)
 ggplot(posterior23) + aes(x = sigma, fill = observaciones) + geom_density(alpha = 0.5)
 ggplot(posterior23) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5)
+
+posterior123 <- rbind(posterior1, posterior2, posterior3)
+ggplot(posterior123) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5) + geom_line(aes(y = dgamma(seq(0,1.2, length.out = 81000), shape = 5, scale = 0.1), x = (-(seq(0,1.2, length.out = 81000)) + 5.883)))
+
+
+# Predicciones del modelo con 2 obs
+
+
+grafico_post <- NA
+for(i in  1:1000) {
+  y <-  posterior2$b0[i] + posterior2$b1[i] * (seq(3.5, 24, length.out = 100) - posterior2$x[i])
+  x1 <- seq(3.5, 24, length.out = 100)
+  muestra <- i
+  lol <- cbind(y, x1, muestra)
+  grafico_post <- rbind(grafico_post, lol)
+}
+
+predicciones <- data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,1]) + 22, x = 6.75)
+predicciones <- rbind(data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,2]) + 22, x = 8.25), predicciones)
+View(predicciones)
+
+ggplot() + geom_line(data = grafico_post, aes(x = x1, y = exp(y) + 22, group = muestra),
+                     alpha = 0.01) + 
+  geom_point(aes(x = c(6.75, 8.25), y = c(32.8, 30.5)), shape = 13, size = 3) + 
+  geom_point(data = predicciones, aes(x = x, y = y), alpha = 0.005)
+
