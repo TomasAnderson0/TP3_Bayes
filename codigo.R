@@ -17,13 +17,13 @@ for (i in seq_along(grid)) {
   mu_prior_matrix[, i] <- exp(prior$beta0 + prior$beta1 * (grid[i] - prior$x)) + 22
 }
 
-mu_mean <- apply(mu_matrix, 2, mean)
-mu_qts <- t(apply(mu_matrix, 2, function(x) quantile(x, c(0.025, 0.975))))
-mu_qts2 <- t(apply(mu_matrix, 2, function(x) quantile(x, c(0.25, 0.75))))
+mu_mean <- apply(mu_prior_matrix, 2, mean)
+mu_qts <- t(apply(mu_prior_matrix, 2, function(x) quantile(x, c(0.025, 0.975))))
+mu_qts2 <- t(apply(mu_prior_matrix, 2, function(x) quantile(x, c(0.25, 0.75))))
 
 # Finalmente, se lamacenan los valores calculados en un data frame
 data_mu_prior <- data.frame(
-  x = x_grid, 
+  x = grid, 
   y = mu_mean,
   lower_95 = mu_qts[, 1],
   upper_95 = mu_qts[, 2],
