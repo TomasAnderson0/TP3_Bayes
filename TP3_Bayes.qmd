@@ -72,6 +72,7 @@ Se suele decir que la muerte es certera pero... ¿es precisa? Acompaña a Guido,
   
 Al llegar, Guido presencio el caos de la escena instantaneamente. Muebles volcados y destrozados. Utensilios de cocina desparramados y manchados. La brisa matutina se abría paso por los vidrios estallados y la débil luz de los móviles policiales dejaban ver que el cuerpo de Sergio Contreras yacía en un charco de sangre hacia un extremo del salón. Sorprendentemente, recordando lo que estudio, salio de su estupor y fue a preguntar los hechos del caso.
 
+## Medicina forense
 
 Uno de los metodos que se utiliza en la medicina forense para poder estimar la hora del fallecimiento, es el estudio de la temperatura corporal. Cuando alguien fallece, la temperatura del cuerpo ira disminuyendo hasta que este llege a un equilibrio termico con la temperatura ambiente. Dicho proceso se lo conoce como *enfriamiento postmortem* o *algor mortis*. Pero el ritmo al que el cuerpo pierde calor no es constante. Dicho cambio, tambien conocido como ecuación diferencial, satisface la siguiente ley:
 
@@ -114,7 +115,7 @@ $$
 $$Y(t)=ln(T(t)-T_{amb}) = ln(T_{diff}e^{-rt}) = ln(T_{diff})+ln(e^{-rt}) = ln(T_{diff})-rt$$
 
 Dicha función esta representada por la ecuacción de una recta $y=\beta_0+\beta_1*x$
-donde $\beta_0$ es el logaritmo neperiano de la diferencia de temperatura del cuerpo inicial y de la ambiente. $\beta_1$ representa la velocidad de cambio de $Y(t)$.
+donde $\beta_0$ es el logaritmo natural de la diferencia de temperatura del cuerpo inicial y de la ambiente. $\beta_1$ representa la velocidad de cambio de $Y(t)$.
 
 
 ```{r, echo = FALSE}
@@ -126,29 +127,34 @@ ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r))
 ```
 
 
-## Capitulo 2: 
+# Capitulo 2: Ademas de que esta muerto, ¿Que sabemos?
 
-La temperatura de Sergio luego de fallecer depende de 4 aspectos:
+Luego de que Martina, una policia que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadistico le pregunta "-¿Y a que hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitas alguna información mas Guido?". Sin mirarle a los ojos, Guido saca su celular, busca la temperatura ambiente actual y dice expectante "-No te preocupes doc, ya tengo todo lo que necesito". Pero Guido, ¿tiene todo lo que necesita? 
 
--   $\beta_0$: la temperatura de su cuerpo al momento de morir (ºC).
+## Distribuciones a *priori*
+
+Fundamentalmente, la temperatura del cuerpo de Sergio a traves del tiempo luego de fallecer depende de 4 aspectos:
+
+-   La temperatura del cuerpo al momento de morir (ºC).
 -   La temperatura ambiente (ºC).
--   $\beta_1$: la velocidad en la que la temperatura del cuerpo cae.
--   $h_m$: a que hora fallecio.
+-   La velocidad en la que la temperatura del cuerpo cae.
+-   A que hora fallecio.
 
 Ademas, hay que tener en cuenta el error de medición que pueda tener el equipo que se use para medir la temperatura.
 
+Pero se requiere que lo que se modele sea una recta, por lo que se trabaja con el logaritmo natural de la diferencia de temperatura del cuerpo y la temperatura del ambiente.
+
 Esto se explicita en el siguiente modelo
 
-
 $$Y_i|\mu_i,\sigma \sim Normal(\mu_i,\sigma)$$
-Donde: $\mu_i = \beta_0 + \beta_1  t_i$
+Donde: $Y_i = ln(T(t_i)-T_{amb})$, $\mu_i = \beta_0 + \beta_1  t_i$ y $t_i$ es el i-esimo tiempo en horas que paso desde que Sergio murió.
 
-Se conoce la temperatura ambiente, siendo $T_{amb}=22$ºC, pero se desconocen los valores exactos de los demas parametros pero se tiene información sobre ellos.
+Se conoce la temperatura ambiente, siendo $T_{amb}=22$ºC. Los valores exactos de los demas parametros se desconocen pero se tiene cierta información sobre ellos.
 
 
-## Tmp beta 0 
+## $\boldsymbol{\beta_0}$: Logaritmo natural de la diferencia entre la temperatura inicial del cuerpo y la ambiente
 
-Se sabe que la temperatura del cuerpo de una persona sana varia entre 36 y 37.5 ºC, por lo que $\beta_0 = ln(T_{diff})$ tiene que estar entre `r log(36-22)` y `r log(37.5-22)`. Una distribución que represente lo requerido es:
+Se sabe que la temperatura del cuerpo de una persona sana varia entre 36 y 37.5 ºC, por lo que $\beta_0 = ln(T_{diff})$ tiene que estar entre $ln(36)=$ `r round(log(36-22),3)` y $ln(37.5)=$ `r round(log(37.5-22),3)`. Una distribución que representa lo requerido es:
 
 ```{r, echo = FALSE}
 beta0_sigma = (log(37.5-22)-log(36-22))/6
@@ -156,24 +162,23 @@ beta0_mu = log(36.75-22)
 ```
 
 $$\beta_0 \sim Normal(2.69,0.017)$$
+
 ```{r, echo = FALSE}
 seq_beta0 = seq(log(36-22),log(37.5-22),length.out = 1000)
 df_beta0 = data.frame(y = dnorm(seq_beta0, 2.69, 0.017), x = seq_beta0)
 ggplot(df_beta0) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta0", breaks = round(seq(log(36-22),log(37.5-22),length.out = 7),3)) + scale_y_continuous(name = "Densidad")
 
+norm_t = data.frame(x = exp(rnorm(100000, 2.69, 0.017))+22)
+ggplot(norm_t)+ geom_density(aes(x = x, y = after_stat(density)), color = "red", size = 1)
 ```
 
 
-## r
-
+## $\boldsymbol{\beta_1}$: Velocidad en la que la temperatura del cuerpo cae
 
 La velocidad a la que decrece la temperatura de los cuerpos humanos cuando mueren es un tema ya estudiado en la medicina forense. 
 
 "Greggio y Valtorta(1998) han demostrado que el descenso de la temperatura corporal post-mortem se realiza mediante un *plateau* inicial de una 3-4 horas de duración, con una caída promedio de 0.5º C por hora, un decrecimiento lineal que sobrepasa las 12 hs de la muerte con un pérdida promedio de 1º C cada hora y luego un *plateau* final, con descenso lento, de 0,5º o 0,25º por hora hasta igualar a la temperatura ambiente." Fraraccio, J(2021). *Medicina forense contemporanea*. Dosyuna ediciones argentinas.
 
-Basandose en este extracto, se tarda aproximadamente 22 horas en que un cuerpo llege a una temperatura abiente de 22ºC, por lo que se calcula el valor de $T(t)$ en $t=22$ para varios valores de $r$ y temperaturas del cuerpo. Se llega a que: 
-
-$$\beta_1 \sim Normal(-0.248,0.018)$$
 
 ```{r, echo = FALSE}
 r_seq = seq(0.1,0.4,.001)
@@ -188,148 +193,79 @@ for (i in r_seq) {
     T_r[contador] = T_fun(22, j, i, 22)
   }
 }
+r_li = unique(T_r_label[which(T_r > 22.02 & T_r <= 22.2)])[1]
+r_ls = unique(T_r_label[which(T_r > 22.02 & T_r <= 22.2)])[109]
 
+r_mu = -(r_ls+r_li)/2
 
-r_mu = -(unique(T_r_label[which(T_r > 22.02 & T_r <= 22.2)])[109]+unique(T_r_label[which(T_r > 22.02 & T_r <= 22.2)])[1])/2
-
-r_sigma = -(unique(T_r_label[which(T_r > 22.02 & T_r <= 22.2)])[109]-unique(T_r_label[which(T_r > 22.02 & T_r <= 22.2)])[1])/6
-
-seq_beta1 = seq(-0.19,-0.31,length.out = 1000)
-df_beta1 = data.frame(y = dnorm(seq_beta1, -0.248, 0.018), x = seq_beta1)
-ggplot(df_beta1) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta1", breaks = round(seq(r_mu-3*r_sigma,r_mu+3*r_sigma,length.out = 7),3))  + scale_y_continuous(name = "Densidad")
-
-
-
-
+r_sigma = (r_ls-r_li)/6
 ```
 
 
-Como $t_i$ depende de cuando la persona murio y no se tiene dicha información se le tiene que asignar una distribución a priori. Entonces se puede separar $t_i$ en $t_i = h_i-h_m$.
+Basandose en este extracto, se tarda aproximadamente 22 horas en que un cuerpo llege a una temperatura abiente de 22 ºC, por lo que se calcula el valor de $T(t)$ en $t=22$ para varios valores de $\beta_1=-r$ y temperaturas iniciales del cuerpo. Los $\beta_1$ que se acercan a 22 ºC a las 22 horas estan entre `r r_li` y `r r_ls`.
 
-Entonces: $\mu_i = \beta_0 + \beta_1  (h_i-h_m)$
+Entonces se llega a que: 
+
+$$\beta_1 \sim Normal(-0.248,0.018)$$
+```{r, echo = FALSE}
+seq_beta1 = seq(-0.19,-0.31,length.out = 1000)
+df_beta1 = data.frame(y = dnorm(seq_beta1, r_mu, r_sigma), x = seq_beta1)
+ggplot(df_beta1) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta1", breaks = round(seq(r_mu-3*r_sigma,r_mu+3*r_sigma,length.out = 7),3))  + scale_y_continuous(name = "Densidad")
+```
+
+
+## $\boldsymbol{h_m}$: Horario de la muerte
+
+Como $t_i$ depende de cuando Sergio murió, y no se tiene dicha información, se le debe asignar una distribución a *priori*. Entonces se puede separar $t_i$ en $t_i = h_i-h_m$.
+
+Donde $h_m$ es la hora en que se murió Sergio y $h_i$ es la hora de la i-esima observación.
+
+Como hubo ruidos extraños a las 5:33 tiene sentido pensar que la muerte pudo haber ocurrido cerca de esa hora, y ademas no pudo haber ocurrido luego de las 5:52 ya que la policia lo hubiera notado. Entonces se plantea la siguiente distribución a *priori*:
+
 
 $$h_m \sim (-1)*Gama(5,0.1)+5.883$$
 ```{r, echo = FALSE}
 seq_h_m = seq(0,1.5,length.out = 1000)
 df_h_m = data.frame(y = dgamma(seq_h_m, shape = 5, scale = 0.1), x = -1 * seq_h_m + 5.883)
-ggplot(df_h_m) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "h_m", breaks = round(seq(4,5.883,length.out = 7),3))  + scale_y_continuous(name = "Densidad")
+ggplot(df_h_m) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Hora de la muerte", breaks = round(seq(4,5.883,length.out = 7),3))  + scale_y_continuous(name = "Densidad")
 ```
 
 
 
+## $\boldsymbol{\sigma}$: Error de medición
 
 
-
-Al investigar sobre el error de medición para la temperatura, el error maximo de un termometro es de 0.5 ºC entonces se calcula la diferencia entre el logaritmo natural de una temperatura $T$ y la temperatura con su error maximo:
-$$ln(T+0.5)-ln(T) = ln(\frac{T+0.5}{T}) = ln(1+\frac{0.5}{T})$$
+Al investigar sobre el error de medición para la temperatura, se encuentra que el error maximo de un termometro es de 0.7 ºC entonces se calcula la diferencia entre el logaritmo natural de una temperatura $T$ y la temperatura con su error maximo:
+$$ln(T+0.7)-ln(T) = ln(\frac{T+0.7}{T}) = ln(1+\frac{0.7}{T})$$
 Y esta expresion sera maxima cuando T sea minimo, es decir, $T=22$. Entonces,
+```{r, echo = FALSE}
+sigma_max = log(1+0.7/22)
+```
 
-$$ln(1+\frac{0.5}{22}) = 0.022 $$
-Por lo tanto, $$\sigma \sim Normal_+(0,0.007)$$ 
+$$ln(1+\frac{0.7}{22}) \approx 0.03 $$
+Por lo tanto,  el *prior* resultante es:
+
+$$\sigma \sim Normal_+(0,0.01)$$ 
 
 
 ```{r, echo = FALSE}
-sigma_sigma = log(45/44)/3
-seq_sigma = seq(-0.023,0.023,length.out = 1000)
-df_sigma = data.frame(y = 2*abs(dnorm(seq_sigma, 0, 0.007)), x = abs(seq_sigma))
-ggplot(df_sigma) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Sigma", breaks = round(seq(0,sigma_sigma*3,length.out = 4),3))  + scale_y_continuous(name = "Densidad")
-
-```
-
-
-
-
-
-```{r, echo = FALSE}
-ln_T_valores_1 = log(T_valores_1-23)
-ln_T_valores_2 = log(T_valores_2-23)
-datos_ln_T = data.frame(x = seq(0,75,1), y = c(ln_T_valores_1, ln_T_valores_2), r = rep(c("0.1", "0.3"), each = 76)) 
-
-ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r))
+seq_sigma = seq(-0.033,0.033,length.out = 1000)
+df_sigma = data.frame(y = 2*abs(dnorm(seq_sigma, 0, 0.01)), x = abs(seq_sigma))
+ggplot(df_sigma) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Sigma", breaks = round(seq(0,sigma_max,length.out = 4),3))  + scale_y_continuous(name = "Densidad")
 
 
 ```
 
-$$F(t) = \beta_0 + \beta_1t $$ donde \$ \beta*0 = ln(T*{diff})\$ y $\beta_1 = -r$
-
-Esta función representa la temperatura del logarimo natural de la diferencia entre la temperatura del cuerpo en el momento t y la temperatura ambiente.
-
-Cuando el tiempo es 0 la funcion toma el valor del logaritmo natural de la diferencia entre la temperatura inicial del cuerpo y la temperatura ambiente.
-
-Cada una hora el logaritmo natural de la diferencia de temperatura del cuerpo menos la temperatura ambiente decrece en r Cº.
-
-beta1 ~ normal(0.245,.03) o algo asi
-
-beta0 ~ normal(ln(14.5), ln(.5/3))
 
 
 
 
 
-```{r}
-x = rnorm(3,1,1)
-log(45/44)/3
-```
-5)
-El error del termometro es de 0.5Cº maximo entonces si le aplicamos la transformacion
-$$ln(T+0.5)-ln(T) = ln(\frac{T+0.5}{T}) = ln(1+\frac{0.5}{T})$$
-Y esta expresion sera maxima cuando T sea minimo, es decir, $T=22$. Entonces,
-
-$$ln(1+\frac{0.5}{22}) = 0.022 $$
 
 
-```{r, echo = FALSE}
-b0 = rnorm(1000, 2.69, 0.017)
-b1 = rnorm(1000, -0.2465, 0.015)
-sigma = abs(rnorm(1000, 0, 0.007))
 
 
-data_prior = data.frame(b0 = b0, b1 = b1, sigma = sigma)
 
-matrix = matrix(0, nrow = 101, ncol = 1000)
-set.seed(39)
-contador = 0
-for (i in seq(0,25,1/4)){
-  contador = contador + 1
-  vector = numeric(1000)
-  for (j in 1:1000) {
-    vector[j] = rnorm(1, b0[j]+b1[j]*i, sigma[j])
-  }
-matrix[contador,] = vector
-}
-
-a = matrix %>% as.data.frame() %>% apply(1,mean)
-
-exp(a)+22
-t1 = sort(matrix[6,])
-v1 = mean(c(t1[25],t1[26]))
-v2 = mean(c(t1[975],t1[976]))
-
-(v2-mean(c(v1,v2)))/2
-```
-
-
-```{r}
-b0 = rnorm(1000, 2.69, 0.017)
-b1 = rnorm(1000, -0.2465, 0.015)
-sigma = abs(rnorm(1000, 0, 0.007))
-
-b0_data = data.frame(y = dnorm(seq(2.6, 2.78, length.out = 1000), 2.69, 0.017), x = seq(2.6, 2.78, length.out = 1000))
-
-ggplot(b0_data) + geom_line(aes(x = x, y = y))
-ggplot(b0_data) + geom_line(aes(x = exp(x)+22, y = y))
-
-
-b1_data = data.frame(y = dnorm(seq(-0.191, -0.302, length.out = 1000), -0.2465, 0.015), x = seq(-0.191, -0.302, length.out = 1000))
-
-ggplot(b1_data) + geom_line(aes(x = x, y = y))
-
-sigma_data = data.frame(y = dnorm(seq(-0.030, 0.030, length.out = 1000), 0, 0.01), x = seq(-0.030, 0.030, length.out = 1000))
-
-
-ggplot(sigma_data) + geom_line(aes(x = abs(x), y = 2*abs(y)))
-
-ggplot(sigma_data) + geom_line(aes(x = exp(x), y = y))
 
 ```
 

@@ -2,9 +2,9 @@ library(ggplot2)
 library(rstan)
 set.seed(1997)
 beta0 = rnorm(1000, mean = 2.69, sd = 0.017)
-beta1 = rnorm(1000, mean = -0.2465, sd = 0.015)
-varia = abs(rnorm(1000, mean = 0, sd = 0.00749))
-x = -rgamma(1000, shape = 7, scale = 0.08) + 5.883
+beta1 = rnorm(1000, mean = -0.248, sd = 0.018)
+varia = abs(rnorm(1000, mean = 0, sd = 0.01))
+x = -rgamma(1000, shape = 5, scale = 0.1) + 5.883
 
 prior = data.frame(beta0, beta1, x)
 
@@ -12,7 +12,7 @@ prior$beta0[1] + prior$beta1[1] * (seq(-1, 24, length.out = 100) - x[1])
 cbind(prior$beta0[1] + prior$beta1[1] * (seq(-1, 24, length.out = 100) - x[1]), 1)
 
 grafico <- NA
-for(i in  1:200) {
+for(i in  1:1000) {
  y <-  prior$beta0[i] + prior$beta1[i] * (seq(3.5, 24, length.out = 100) - x[i])
  x1 <- seq(3.5, 24, length.out = 100)
  muestra <- i
@@ -34,7 +34,8 @@ ggplot(grafico) + aes(x = x1, y = (exp(y) + 22), group = muestra) + geom_line(al
                                 "20:00", "22:00", "00:00"),
                      name = "Hora") +
   scale_y_continuous(name = "Temperatura (°C)", breaks = c(37.5, 36, 35, 32.5, 30, 27.5, 25, 22),
-                     limits = c(22, 38)) + guide()
+                     limits = c(22, 40)) + geom_text(x = 15, y = 36.75, label = "Rango de temperatura inicial") +
+  geom_text(x = 5.40, y = 27.5, label = "Llegada de los policias", angle = 90)
 
 
 dgamma(seq(0,5, length.out = 100), shape = 2, scale = 0.5)
