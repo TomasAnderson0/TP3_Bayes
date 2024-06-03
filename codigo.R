@@ -38,9 +38,9 @@ ggplot(grafico) + aes(x = x1, y = (exp(y) + 22), group = muestra) + geom_line(al
 
 
 dgamma(seq(0,5, length.out = 100), shape = 2, scale = 0.5)
-ggplot() + aes(y = dgamma(seq(0,5, length.out = 100), shape = 5, scale = 0.1), x = (-(seq(0,5, length.out = 100)) + 5.883)) +
+ggplot() + aes(y = dgamma(seq(0,5, length.out = 100), shape = 2, scale = 0.4), x = (-(seq(0,5, length.out = 100)) + 5.883)) +
   geom_line() + geom_vline(xintercept = 5.5)
-53/60
+
 
 
 primera_obs <- list(
@@ -55,17 +55,20 @@ modelo1obs <- stan(
   model_name = "modelo 1 obs",
   chains = 3,
   refresh = 0,
-  seed = 181222,
+  seed = 1997,
   iter = 10000,
   warmup = 1000
 )
 
+traceplot(modelo1obs)
 modelo1obs
-posterior1 <- as.data.frame(extract(modelo1obs, c("b0", "b1", "x" ,"sigma")))
+posterior1 <- data.frame(extract(modelo1obs, c("b0", "b1", "x" ,"sigma")), observaciones = "1 observación")
 ggplot(posterior1) + aes(x = b0) + geom_histogram() + geom_line(aes(x = seq(2.64, 2.76, length.out = 27000), y = 125*dnorm(seq(2.64, 2.76, length.out = 27000), mean = 2.69, sd = 0.017)))
 ggplot(posterior1) + aes(x = b1) + geom_histogram() + geom_line(aes(x = seq(-0.3, -0.175, length.out = 27000), y = 120*dnorm(seq(-0.3, -0.175, length.out = 27000), mean = -0.2465, sd = 0.015)))
-ggplot(posterior1) + aes(x = sigma) + geom_histogram() + geom_line(aes(x = seq(0, 0.4, length.out = 27000), y = 120*dnorm(seq(0, 0.4, length.out = 27000), mean = -0.2465, sd = 0.015)))
-ggplot(posterior1) + aes(x = x) + geom_histogram()
+ggplot(posterior1) + aes(x = sigma) + geom_histogram() + geom_line(aes(x = abs(seq(-0.04, 0.04, length.out = 27000)),
+                                                                       y = 70*abs(dnorm(seq(-0.04, 0.04, length.out = 27000),
+                                                                                         mean = 0, sd = 0.007))))
+ggplot(posterior1) + aes(x = x) + geom_histogram() + geom_line(aes(y = 1350*dgamma(seq(0,1.2, length.out = 27000), shape = 5, scale = 0.1), x = (-(seq(0,1.2, length.out = 27000)) + 5.883)))
 
 
 segunda_obs <- list(
@@ -85,12 +88,13 @@ modelo2obs <- stan(
   iter = 10000
 )
 
-modelo2obs
-posterior2 <- as.data.frame(extract(modelo2obs, c("b0", "b1", "x" ,"sigma")))
-ggplot(posterior2) + aes(x = b0) + geom_histogram()
-ggplot(posterior2) + aes(x = b1) + geom_histogram()
-ggplot(posterior2) + aes(x = sigma) + geom_histogram()
-ggplot(posterior2) + aes(x = x) + geom_histogram()
+traceplot(modelo2obs)
+posterior2 <- data.frame(extract(modelo2obs, c("b0", "b1", "x" ,"sigma")), observaciones = "2 observaciones")
+posterior12 <- rbind(posterior1, posterior2)
+ggplot(posterior12) + aes(x = b0, fill = observaciones) + geom_density(alpha = 0.5)# + geom_line(aes(x = seq(2.62, 2.77, length.out = 27000), y = 150*dnorm(seq(2.62, 2.77, length.out = 27000), mean = 2.69, sd = 0.017)))
+ggplot(posterior12) + aes(x = b1, fill = observaciones) + geom_density(alpha = 0.5)
+ggplot(posterior12) + aes(x = sigma, fill = observaciones) + geom_density(alpha = 0.5)
+ggplot(posterior12) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5)
 
 tercera_obs <- list(
   N = 3, 
@@ -109,9 +113,11 @@ modelo3obs <- stan(
   iter = 10000
 )
 
+traceplot(modelo3obs)
 modelo3obs
-posterior3 <- as.data.frame(extract(modelo3obs, c("b0", "b1", "x" ,"sigma")))
-ggplot(posterior3) + aes(x = b0) + geom_histogram()
-ggplot(posterior3) + aes(x = b1) + geom_histogram()
-ggplot(posterior3) + aes(x = sigma) + geom_histogram()
-ggplot(posterior3) + aes(x = x) + geom_histogram()
+posterior3 <- data.frame(extract(modelo3obs, c("b0", "b1", "x" ,"sigma")), observaciones = "3 observaciones")
+posterior23 <- rbind(posterior2, posterior3)
+ggplot(posterior23) + aes(x = b0, fill = observaciones) + geom_density(alpha = 0.5)
+ggplot(posterior23) + aes(x = b1, fill = observaciones) + geom_density(alpha = 0.5)
+ggplot(posterior23) + aes(x = sigma, fill = observaciones) + geom_density(alpha = 0.5)
+ggplot(posterior23) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5)

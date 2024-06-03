@@ -12,7 +12,7 @@ parameters {
 model {
   b0 ~ normal(2.69, 0.017);
   b1 ~ normal(-0.248, 0.018);
-  sigma ~ normal(0, 0.007);
+  sigma ~ normal(0, 0.01);
   -(x - 5.883) ~ gamma(5, 0.1);
   y ~ normal(b0 + b1 * (t - x), sigma);
 }
