@@ -12,20 +12,20 @@ parameters {
 model {
   b0 ~ normal(2.69, 0.017);
   b1 ~ normal(-0.248, 0.018);
-  sigma ~ normal(0, 0.007);
+  sigma ~ normal(0, 0.01);
   -(x - 5.883) ~ gamma(5, 0.1);
   y ~ normal(b0 + b1 * (t - x), sigma);
 }
 generated quantities {
   vector[N] mu;
   vector[N] log_dif_temp;
-  vector[N] log_likelihood;
+  vector[N] log_lik;
   
-  mu = b0 + b1 * t;
+  mu = b0 + b1 * (t - x);
 
   for (i in 1:N) {
     log_dif_temp[i] = normal_rng(mu[i], sigma);
-    log_likelihood[i] = normal_lpdf(y[i] | mu[i], sigma);
+    log_lik[i] = normal_lpdf(y[i] | mu[i], sigma);
   }
 }
 
