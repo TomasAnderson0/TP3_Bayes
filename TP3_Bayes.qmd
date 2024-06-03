@@ -208,7 +208,17 @@ Como $t_i$ depende de cuando la persona murio y no se tiene dicha información s
 
 Entonces: $\mu_i = \beta_0 + \beta_1  (h_i-h_m)$
 
-$$h_m \sim -1*Gama(7,0.08)+5.883$$
+$$h_m \sim (-1)*Gama(5,0.1)+5.883$$
+```{r, echo = FALSE}
+seq_h_m = seq(0,1.5,length.out = 1000)
+df_h_m = data.frame(y = dgamma(seq_h_m, shape = 5, scale = 0.1), x = -1 * seq_h_m + 5.883)
+ggplot(df_h_m) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "h_m", breaks = round(seq(4,5.883,length.out = 7),3))  + scale_y_continuous(name = "Densidad")
+```
+
+
+
+
+
 
 Al investigar sobre el error de medición para la temperatura, el error maximo de un termometro es de 0.5 ºC entonces se calcula la diferencia entre el logaritmo natural de una temperatura $T$ y la temperatura con su error maximo:
 $$ln(T+0.5)-ln(T) = ln(\frac{T+0.5}{T}) = ln(1+\frac{0.5}{T})$$
