@@ -17,13 +17,13 @@ for (i in seq_along(grid)) {
   mu_prior_matrix[, i] <- exp(prior$beta0 + prior$beta1 * (grid[i] - prior$x)) + 22
 }
 
-mu_mean <- apply(mu_matrix, 2, mean)
-mu_qts <- t(apply(mu_matrix, 2, function(x) quantile(x, c(0.025, 0.975))))
-mu_qts2 <- t(apply(mu_matrix, 2, function(x) quantile(x, c(0.25, 0.75))))
+mu_mean <- apply(mu_prior_matrix, 2, mean)
+mu_qts <- t(apply(mu_prior_matrix, 2, function(x) quantile(x, c(0.025, 0.975))))
+mu_qts2 <- t(apply(mu_prior_matrix, 2, function(x) quantile(x, c(0.25, 0.75))))
 
 # Finalmente, se lamacenan los valores calculados en un data frame
 data_mu_prior <- data.frame(
-  x = x_grid, 
+  x = grid, 
   y = mu_mean,
   lower_95 = mu_qts[, 1],
   upper_95 = mu_qts[, 2],
@@ -53,7 +53,10 @@ ggplot(data_mu_prior) +
                                 "12:00", "14:00", "16:00", "18:00",
                                 "20:00", "22:00", "00:00"),
                      name = "Hora") +
-  scale_y_continuous(name = "Temperatura (°C)", breaks = c(37.5, 36, 35, 32.5, 30, 27.5, 25, 22))
+  scale_y_continuous(name = "Temperatura (°C)", breaks = c(37.5, 36, 35, 32.5, 30, 27.5, 25, 22)) +
+  geom_text(x = 10, y = 36.75, label = "Rango de temperatura inicial", color = "#333333") +
+  geom_text(x = 5.40, y = 27.5, label = "Llegada de los policias", angle = 90, color = "#333333")
+
 
 grafico <- NA
 for(i in  1:1000) {
@@ -78,9 +81,7 @@ ggplot(grafico) + aes(x = x1, y = (exp(y) + 22), group = muestra) + geom_line(al
                                 "20:00", "22:00", "00:00"),
                      name = "Hora") +
   scale_y_continuous(name = "Temperatura (°C)", breaks = c(37.5, 36, 35, 32.5, 30, 27.5, 25, 22),
-                     limits = c(22, 40)) + geom_text(x = 15, y = 36.75, label = "Rango de temperatura inicial") +
-  geom_text(x = 5.40, y = 27.5, label = "Llegada de los policias", angle = 90)
-
+                     limits = c(22, 40)) 
 
 
 dgamma(seq(0,5, length.out = 100), shape = 2, scale = 0.5)
