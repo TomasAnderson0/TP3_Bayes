@@ -16,16 +16,14 @@ model {
   -(x - 5.883) ~ gamma(5, 0.1);
   y ~ normal(b0 + b1 * (t - x), sigma);
 }
-// generated quantities {
-//   vector[N] mu;
-//   vector[N] dif_temp;
-//   vector[N] log_likelihood;
-//   
-//   mu = b0 + b1 * t;
-// 
-//   for (i in 1:N) {
-//     dif_temp[i] = normal_rng(mu[i], sigma);
-//     log_likelihood[i] = normal_lpdf(t[i] | mu[i], sigma);
-//   }
-// }
+generated quantities {
+  real mu;
+  real log_dif_temp;
+  real log_lik;
+
+  mu = b0 + b1 * (t - x);
+
+  log_dif_temp = normal_rng(mu, sigma);
+  log_lik = normal_lpdf(y | mu, sigma);
+}
 
