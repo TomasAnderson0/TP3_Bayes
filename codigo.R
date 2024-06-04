@@ -90,12 +90,6 @@ ggplot() + aes(y = dgamma(seq(0,5, length.out = 100), shape = 2, scale = 0.4), x
 
 # Correr el modelo Stan y ver los posterior
 
-init_list <- list(
-  list(b0 = 2.7, b1 = 0.25, sigma = , x =),
-  list(a = 0.5, b = -0.1),
-  list(a = 0.2, b = 0.05)
-)
-
 primera_obs <- list(
   N = 1, 
   t = 6.75, 
@@ -122,7 +116,7 @@ ggplot(posterior1) + aes(x = b1) + geom_histogram() + geom_line(aes(x = seq(-0.3
 ggplot(posterior1) + aes(x = sigma) + geom_histogram() + geom_line(aes(x = abs(seq(-0.04, 0.04, length.out = 27000)),
                                                                        y = 70*abs(dnorm(seq(-0.04, 0.04, length.out = 27000),
                                                                                          mean = 0, sd = 0.007))))
-ggplot(posterior1) + aes(x = x) + geom_histogram() + geom_line(aes(y = 1350*dgamma(seq(0,1.2, length.out = 27000), shape = 5, scale = 0.1), x = (-(seq(0,1.2, length.out = 27000)) + 5.883)))
+ggplot(posterior1) + aes(x = x) + geom_density(fill = "pink", alpha = 0.5) + geom_line(aes(y = dgamma(seq(0,1.2, length.out = 27000), shape = 5, scale = 0.1), x = (-(seq(0,1.2, length.out = 27000)) + 5.883)))
 
 
 segunda_obs <- list(
@@ -187,22 +181,9 @@ ggplot(posterior23) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.
 posterior123 <- rbind(posterior1, posterior2, posterior3)
 ggplot(posterior123) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5) + geom_line(aes(y = dgamma(seq(0,1.2, length.out = 81000), shape = 5, scale = 0.1), x = (-(seq(0,1.2, length.out = 81000)) + 5.883)))
 
+# Predicciones del modelo con 1 obs
 
-# Predicciones del modelo con 2 obs
-
-
-grafico_post <- NA
-for(i in  1:1000) {
-  y <-  posterior2$b0[i] + posterior2$b1[i] * (seq(3.5, 14, length.out = 100) - 
-                                                 posterior2$x[i])
-  x1 <- seq(3.5, 14, length.out = 100)
-  muestra <- i
-  lol <- cbind(y, x1, muestra)
-  grafico_post <- rbind(grafico_post, lol)
-}
-
-predicciones <- data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,1]) + 22, x = 6.75)
-predicciones <- rbind(data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,2]) + 22, x = 8.25), predicciones)
+predicciones1 <- data.frame(y = exp(extract(modelo1obs, "log_dif_temp")$log_dif_temp) + 22, x = 6.75)
 
 x_grid <- seq(4, 14, length.out = 100)
 mu_matrix <- matrix(nrow = 27000, ncol = 100)
@@ -242,7 +223,63 @@ ggplot() +
     color = "firebrick",
     data = data_mu
   ) +
-  stat_summary(data = predicciones, fun.data = mean_sdl,
+  stat_summary(data = predicciones1, fun.data = mean_sdl,
+               mapping = aes(x = x, y = y), color = "blue", size = 0.5) +
+  scale_y_continuous(limits = c(28, 36), breaks = seq(28, 36, 1),
+                     name = "Temperatura (ºC)") + 
+  scale_x_continuous(limits = c(6, 9), breaks = seq(6, 9, 0.5), 
+                     labels = c("6:00", "6:30", "7:00", "7:30",
+                                "8:00", "8:30", "9:00"), 
+                     name = "Hora") +
+  geom_point(aes(x = c(6.75), y = c(32.8)),
+             shape = 13, size = 2, color = "red") +
+  theme_bw()
+
+
+# Predicciones del modelo con 2 obs
+
+predicciones2 <- data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,1]) + 22, x = 6.75)
+predicciones2 <- rbind(data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,2]) + 22, x = 8.25), predicciones)
+
+x_grid <- seq(4, 14, length.out = 100)
+mu_matrix <- matrix(nrow = 27000, ncol = 100)
+
+for (i in seq_along(x_grid)) {
+  mu_matrix[, i] <- exp(posterior2$b0 + posterior2$b1 * (x_grid[i] - posterior2$x)) + 22
+}
+
+mu_mean <- apply(mu_matrix, 2, mean)
+mu_qts <- t(apply(mu_matrix, 2, function(x) quantile(x, c(0.025, 0.975))))
+mu_qts2 <- t(apply(mu_matrix, 2, function(x) quantile(x, c(0.25, 0.75))))
+
+data_mu <- data.frame(
+  x = x_grid, 
+  y = mu_mean,
+  lower_95 = mu_qts[, 1],
+  upper_95 = mu_qts[, 2],
+  lower_50 = mu_qts2[, 1],
+  upper_50 = mu_qts2[, 2]
+)
+
+ggplot() + 
+  geom_ribbon(
+    aes(x, ymin = lower_95, ymax = upper_95),
+    fill = "grey50",
+    alpha = 0.6,
+    data = data_mu
+  ) +
+  geom_ribbon(
+    aes(x, ymin = lower_50, ymax = upper_50),
+    fill = "grey35",
+    alpha = 0.6,
+    data = data_mu
+  ) +
+  geom_line(
+    aes(x, y), 
+    color = "firebrick",
+    data = data_mu
+  ) +
+  stat_summary(data = predicciones2, fun.data = mean_sdl,
                mapping = aes(x = x, y = y), color = "blue", size = 0.5) +
   scale_y_continuous(limits = c(28, 36), breaks = seq(28, 36, 1),
                      name = "Temperatura (ºC)") + 
