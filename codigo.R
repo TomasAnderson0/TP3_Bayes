@@ -21,7 +21,6 @@ mu_mean <- apply(mu_prior_matrix, 2, mean)
 mu_qts <- t(apply(mu_prior_matrix, 2, function(x) quantile(x, c(0.025, 0.975))))
 mu_qts2 <- t(apply(mu_prior_matrix, 2, function(x) quantile(x, c(0.25, 0.75))))
 
-# Finalmente, se lamacenan los valores calculados en un data frame
 data_mu_prior <- data.frame(
   x = grid, 
   y = mu_mean,
@@ -88,69 +87,6 @@ ggplot(posterior1) + aes(x = sigma) + geom_histogram() + geom_line(aes(x = abs(s
                                                                                          mean = 0, sd = 0.007))))
 ggplot(posterior1) + aes(x = x) + geom_density(fill = "pink", alpha = 0.5) + geom_line(aes(y = dgamma(seq(0,1.2, length.out = 27000), shape = 5, scale = 0.1), x = (-(seq(0,1.2, length.out = 27000)) + 5.883)))
 
-
-segunda_obs <- list(
-  N = 2, 
-  t = c(6.75, 8.25), 
-  y = c(log(32.8 - 22), log(30.5 - 22))
-)
-
-modelo2obs <- stan( 
-  file = "Modelo.stan",
-  data = segunda_obs,
-  model_name = "modelo 2 obs",
-  chains = 3,
-  refresh = 0,
-  seed = 1997,
-  warmup = 1000,
-  control = list(adapt_delta = 0.99),
-  iter = 10000
-)
-
-modelo2obs
-
-traceplot(modelo2obs)
-posterior2 <- data.frame(extract(modelo2obs, c("b0", "b1", "x" ,"sigma")), observaciones = "2 observaciones")
-posterior12 <- rbind(posterior1, posterior2)
-ggplot(posterior12) + aes(x = b0, fill = observaciones) + geom_density(alpha = 0.5)# + geom_line(aes(x = seq(2.62, 2.77, length.out = 27000), y = 150*dnorm(seq(2.62, 2.77, length.out = 27000), mean = 2.69, sd = 0.017)))
-ggplot(posterior12) + aes(x = b1, fill = observaciones) + geom_density(alpha = 0.5)
-ggplot(posterior12) + aes(x = sigma, fill = observaciones) + geom_density(alpha = 0.5)
-ggplot(posterior12) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5)
-
-tercera_obs <- list(
-  N = 3, 
-  t = c(6.75, 8.25, 13.5), 
-  y = c(log(32.8 - 22), log(30.5 - 22), log(23.7 - 22))
-)
-
-modelo3obs <- stan( 
-  file = "Modelo.stan",
-  data = tercera_obs,
-  model_name = "modelo 3 obs",
-  chains = 3,
-  refresh = 0,
-  seed = 1997,
-  warmup = 1000,
-  control = list(adapt_delta = 0.99),
-  iter = 10000
-)
-
-loo(modelo3obs)
-
-loo_compare(loo(modelo2obs),loo(modelo3obs))
-
-traceplot(modelo3obs)
-modelo3obs
-posterior3 <- data.frame(extract(modelo3obs, c("b0", "b1", "x" ,"sigma")), observaciones = "3 observaciones")
-posterior23 <- rbind(posterior2, posterior3)
-ggplot(posterior23) + aes(x = b0, fill = observaciones) + geom_density(alpha = 0.5)
-ggplot(posterior23) + aes(x = b1, fill = observaciones) + geom_density(alpha = 0.5)
-ggplot(posterior23) + aes(x = sigma, fill = observaciones) + geom_density(alpha = 0.5)
-ggplot(posterior23) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5)
-
-posterior123 <- rbind(posterior1, posterior2, posterior3)
-ggplot(posterior123) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5) + geom_line(aes(y = dgamma(seq(0,1.2, length.out = 81000), shape = 5, scale = 0.1), x = (-(seq(0,1.2, length.out = 81000)) + 5.883)))
-
 # Predicciones del modelo con 1 obs
 
 predicciones1 <- data.frame(y = exp(extract(modelo1obs, "log_dif_temp")$log_dif_temp) + 22, x = 6.75)
@@ -205,6 +141,35 @@ ggplot() +
              shape = 13, size = 2, color = "red") +
   theme_bw()
 
+# Modelo 2
+
+segunda_obs <- list(
+  N = 2, 
+  t = c(6.75, 8.25), 
+  y = c(log(32.8 - 22), log(30.5 - 22))
+)
+
+modelo2obs <- stan( 
+  file = "Modelo.stan",
+  data = segunda_obs,
+  model_name = "modelo 2 obs",
+  chains = 3,
+  refresh = 0,
+  seed = 1997,
+  warmup = 1000,
+  control = list(adapt_delta = 0.99),
+  iter = 10000
+)
+
+modelo2obs
+
+traceplot(modelo2obs)
+posterior2 <- data.frame(extract(modelo2obs, c("b0", "b1", "x" ,"sigma")), observaciones = "2 observaciones")
+posterior12 <- rbind(posterior1, posterior2)
+ggplot(posterior12) + aes(x = b0, fill = observaciones) + geom_density(alpha = 0.5)# + geom_line(aes(x = seq(2.62, 2.77, length.out = 27000), y = 150*dnorm(seq(2.62, 2.77, length.out = 27000), mean = 2.69, sd = 0.017)))
+ggplot(posterior12) + aes(x = b1, fill = observaciones) + geom_density(alpha = 0.5)
+ggplot(posterior12) + aes(x = sigma, fill = observaciones) + geom_density(alpha = 0.5)
+ggplot(posterior12) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5)
 
 # Predicciones del modelo con 2 obs
 
@@ -261,3 +226,40 @@ ggplot() +
              shape = 13, size = 2, color = "red") +
   theme_bw()
 
+# Modelo con 3 obs
+
+tercera_obs <- list(
+  N = 3, 
+  t = c(6.75, 8.25, 13.5), 
+  y = c(log(32.8 - 22), log(30.5 - 22), log(23.7 - 22))
+)
+
+modelo3obs <- stan( 
+  file = "Modelo.stan",
+  data = tercera_obs,
+  model_name = "modelo 3 obs",
+  chains = 3,
+  refresh = 0,
+  seed = 1997,
+  warmup = 1000,
+  control = list(adapt_delta = 0.99),
+  iter = 10000
+)
+
+loo(modelo3obs)
+
+loo_compare(loo(modelo2obs),loo(modelo3obs))
+
+traceplot(modelo3obs)
+modelo3obs
+posterior3 <- data.frame(extract(modelo3obs, c("b0", "b1", "x" ,"sigma")), observaciones = "3 observaciones")
+posterior23 <- rbind(posterior2, posterior3)
+ggplot(posterior23) + aes(x = b0, fill = observaciones) + geom_density(alpha = 0.5)
+ggplot(posterior23) + aes(x = b1, fill = observaciones) + geom_density(alpha = 0.5)
+ggplot(posterior23) + aes(x = sigma, fill = observaciones) + geom_density(alpha = 0.5)
+ggplot(posterior23) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5)
+
+posterior123 <- rbind(posterior1, posterior2, posterior3)
+ggplot(posterior123) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5) + geom_line(aes(y = dgamma(seq(0,1.2, length.out = 81000), shape = 5, scale = 0.1), x = (-(seq(0,1.2, length.out = 81000)) + 5.883)))
+
+save(modelo1obs, modelo2obs, modelo3obs, file = "posteriors_stan.Rdata")
