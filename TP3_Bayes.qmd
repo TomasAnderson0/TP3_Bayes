@@ -94,7 +94,7 @@ $$\frac{dT(t)}{dt} =r(T_{amb}-T(t))$$
 Si $T_{amb}=23$ y $T_{ini}=37$ la forma de la función es la siguiente:
 
 
-```{r, echo = FALSE, message = FALSE, warning = FALSE}
+```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "Temperatura de un cuerpo según el tiempo desde la muerte"}
 T_fun = function(t_amb, t_i, r, t) t_amb + (t_i - t_amb) * exp(-r * t) 
 T_valores_1 = T_fun(23, 37, .1, seq(0,75,1))
 T_valores_2 = T_fun(23, 37, .3, seq(0,75,1))
@@ -118,12 +118,12 @@ Dicha función esta representada por la ecuacción de una recta $y=\beta_0+\beta
 donde $\beta_0$ es el logaritmo natural de la diferencia de temperatura del cuerpo inicial y de la ambiente. $\beta_1$ representa la velocidad de cambio de $Y(t)$.
 
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.cap = "Transformación de la temperatura de un cuerpo según el tiempo desde la muerte"}
 ln_T_valores_1 = log(T_valores_1-23)
 ln_T_valores_2 = log(T_valores_2-23)
 datos_ln_T = data.frame(x = seq(0,75,1), y = c(ln_T_valores_1, ln_T_valores_2), r = rep(c("0.1", "0.3"), each = 76)) 
 
-ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r))
+ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuous(name = "Y(t)") + scale_x_continuous(name = "t")
 ```
 
 
@@ -163,7 +163,7 @@ beta0_mu = log(36.75-22)
 
 $$\beta_0 \sim Normal(2.69,0.017)$$
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.cap = "Distribución a priori de beta 0"}
 seq_beta0 = seq(log(36-22),log(37.5-22),length.out = 1000)
 df_beta0 = data.frame(y = dnorm(seq_beta0, 2.69, 0.017), x = seq_beta0)
 ggplot(df_beta0) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta0", breaks = round(seq(log(36-22),log(37.5-22),length.out = 7),3)) + scale_y_continuous(name = "Densidad")
@@ -207,7 +207,7 @@ Basandose en este extracto, se tarda aproximadamente 22 horas en que un cuerpo l
 Entonces se llega a que: 
 
 $$\beta_1 \sim Normal(-0.248,0.018)$$
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.cap = "Distribución a priori de beta 1"}
 seq_beta1 = seq(-0.19,-0.31,length.out = 1000)
 df_beta1 = data.frame(y = dnorm(seq_beta1, r_mu, r_sigma), x = seq_beta1)
 ggplot(df_beta1) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta1", breaks = round(seq(r_mu-3*r_sigma,r_mu+3*r_sigma,length.out = 7),3))  + scale_y_continuous(name = "Densidad")
@@ -224,7 +224,7 @@ Como hubo ruidos extraños a las 5:33 tiene sentido pensar que la muerte pudo ha
 
 
 $$h_m \sim (-1)*Gama(5,0.1)+5.883$$
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.cap = "Distribución a priori de la hora de muerte"}
 seq_h_m = seq(0,1.5,length.out = 1000)
 df_h_m = data.frame(y = dgamma(seq_h_m, shape = 5, scale = 0.1), x = -1 * seq_h_m + 5.883)
 ggplot(df_h_m) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Hora de la muerte", breaks = round(seq(4,5.883,length.out = 7),3))  + scale_y_continuous(name = "Densidad")
@@ -248,7 +248,7 @@ Por lo tanto,  el *prior* resultante es:
 $$\sigma \sim Normal_+(0,0.01)$$ 
 
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.cap = "Distribución a priori del error de medición"}
 seq_sigma = seq(-0.033,0.033,length.out = 1000)
 df_sigma = data.frame(y = 2*abs(dnorm(seq_sigma, 0, 0.01)), x = abs(seq_sigma))
 ggplot(df_sigma) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Sigma", breaks = round(seq(0,sigma_max,length.out = 4),3))  + scale_y_continuous(name = "Densidad")
@@ -256,18 +256,78 @@ ggplot(df_sigma) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Sig
 
 ```
 
+## Descenso de la temperaruta a priori
+
+Una vez definidas las distribuciones a priori de todos los parametros de los que depende el cambio de temperatura del cuerpo a traves del tiempo, esta se puede graficar para cercionar que lo que uno supone es razonable.
 
 
+```{r, echo = FALSE, fig.cap = "Distribución a priori de la temperatura del cuerpo de Sergio"}
+set.seed(1997)
+beta0 = rnorm(1000, mean = 2.69, sd = 0.017)
+beta1 = rnorm(1000, mean = -0.248, sd = 0.018)
+varia = abs(rnorm(1000, mean = 0, sd = 0.01))
+x = -rgamma(1000, shape = 5, scale = 0.1) + 5.883
 
 
+grid <- seq(4, 14, length.out = 100)
+mu_prior_matrix <- matrix(nrow = 1000, ncol = 100)
 
+for (i in seq_along(grid)) {
+  mu_prior_matrix[, i] <- exp(prior$beta0 + prior$beta1 * (grid[i] - prior$x)) + 22
+}
 
+mu_mean <- apply(mu_prior_matrix, 2, mean)
+mu_qts <- t(apply(mu_prior_matrix, 2, function(x) quantile(x, c(0.025, 0.975))))
+mu_qts2 <- t(apply(mu_prior_matrix, 2, function(x) quantile(x, c(0.25, 0.75))))
 
+# Finalmente, se lamacenan los valores calculados en un data frame
+data_mu_prior <- data.frame(
+  x = grid, 
+  y = mu_mean,
+  lower_95 = mu_qts[, 1],
+  upper_95 = mu_qts[, 2],
+  lower_50 = mu_qts2[, 1],
+  upper_50 = mu_qts2[, 2]
+)
 
-
+ggplot(data_mu_prior) +
+  geom_ribbon(
+    aes(x, ymin = lower_95, ymax = upper_95),
+    fill = "grey50",
+    alpha = 0.6
+  ) +
+  geom_ribbon(
+    aes(x, ymin = lower_50, ymax = upper_50),
+    fill = "grey35",
+    alpha = 0.6
+  ) +
+  geom_line(
+    aes(x, y), 
+    color = "red"
+  ) +
+  geom_hline(yintercept = c(37.5, 36), color = "green") +
+  geom_vline(xintercept = c(5.83), color = "blue") + theme_bw() +
+  scale_x_continuous(breaks = c(4, 5.83, 8, 10, 12, 14, 16, 18, 20, 22, 24),
+                     labels = c("4:00", "5:53", "8:00", "10:00",
+                                "12:00", "14:00", "16:00", "18:00",
+                                "20:00", "22:00", "00:00"),
+                     name = "Hora") +
+  scale_y_continuous(name = "Temperatura (°C)", breaks = c(37.5, 36, 35, 32.5, 30, 27.5, 25, 22)) +
+  geom_text(x = 10, y = 36.75, label = "Rango de temperatura inicial", color = "#333333") +
+  geom_text(x = 5.40, y = 27.5, label = "Llegada de los policias", angle = 90, color = "#333333")
 
 
 ```
+
+
+Capitulo 3: Despues de volver de la estación de servicio, mientras los demas miembros del equipo sacan fotos y recogen pruebas de la escena, nuestro protagonista observa detenidamente el proceso reflexionando sobre el ambiente. -"¿Hoy es un día lugubre porque ocurrio un asesinato, o ocurrio un asesinato porque es un día lugubre?" Pero antes de poder continuar con su meditaciones, observa atentamente como el doctor le toma la temperatura al cadaver antes de envolverlo en una bolsa de óbito. -"Esta vez tiene una temperatura de 30.5 ºC." dice el doctor con súbito sosiego. -"Ahora lo transportan a la morgue en Capital para que le hagan la autopsia. ¿Queres los resultados de la autopsia?". "Bueno doc, pero no le veo profunda utilidad a dicha información.". Al tener todos los datos que creia necesario, Guido suspira con anticipo y se dirige al auto para que lo devuelvan a su casa.
+
+
+
+
+
+
+
 
 
 
