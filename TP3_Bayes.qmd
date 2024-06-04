@@ -375,7 +375,8 @@ gamma_1 = -rgamma(27000,shape = 5, scale = .1)+5.883
 
 grafico_post_x_1 = data.frame(x = c(as.numeric(posterior1$x),gamma_1), color = rep(c("Posterior", "Prior"), each = 27000))
 
-ggplot(grafico_post_x_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) 
+ggplot(grafico_post_x_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) + 
+  scale_fill_discrete(name = "", labels = c("1 observación - Posterior", "1 observación - Prior")) + scale_y_continuous(name = "Densidad") + scale_x_continuous(name = "Hora de la muerte") + theme(legend.position = "top")
 
 ic_1 = quantile(posterior1$x,c(.025, .5,.975))
 
@@ -386,17 +387,18 @@ Utilizando solo la primera medición de la temperatura del cuerpo, con una proba
 
 Al incorporar informarción, se redujo la incertidumbre sobre la hora de muerte de Sergio, pero usar tan solo una observación, realmente no se puede obtener una mejoria sustancial de la creencia de los parametros $\beta_0$ y $\beta_1$, ya que estos necesitan mas de una observación para poder reducir la incerteza sobre  ellos correctamente.
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.cap = "Distribución a posteriori de beta0"}
 grafico_post_b0_1 = data.frame(x = c(as.numeric(posterior1$b0),rnorm(27000,2.69,0.017)), color = rep(c("Posterior", "Prior"), each = 27000))
 
-ggplot(grafico_post_b0_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) 
+ggplot(grafico_post_b0_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) +  scale_fill_discrete(name = "", labels = c("1 observación - Posterior", "1 observación - Prior")) + scale_x_continuous(name = "beta0") + scale_y_continuous(name = "Densidad") + theme(legend.position = "top")
 ```
 
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.cap = "Distribución a posteriori de beta1"}
 grafico_post_b1_1 = data.frame(x = c(as.numeric(posterior1$b1),rnorm(27000,-0.248,0.018)), color = rep(c("Posterior", "Prior"), each = 27000))
 
-ggplot(grafico_post_b1_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) 
+ggplot(grafico_post_b1_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) + 
+  scale_fill_discrete(name = "", labels = c("1 observación - Posterior", "1 observación - Prior")) + scale_x_continuous(name = "beta1") + scale_y_continuous(name = "Densidad") + theme(legend.position = "top")
 
 ```
 
