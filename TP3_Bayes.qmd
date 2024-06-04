@@ -63,12 +63,12 @@ library(rstan)
 Era una pacifica madrugada de miércoles en Cordoba, cuando suena un telefono en la cercania. Letargico, luego de dejar sonando unos segundos el celular, Guido abre los ojos desganadamente y comprueba quien es la persona que esta irrumpiendo en su sueño. "-¿El capitan?" piensa Guido dudosamente. Al atender el movil se escucha, "-LLego la hora de tu primer trabajo Guido. Preparate que en 10 minutos te pasan a buscar para ir a Salsipuedes." Como si todavia no hubiese entendido que esta pasando, lentamente Guido salio de su lecho para vestirse con su preciado nuevo uniforme de la policía científica de Córdoba, recien cuando el vehiculo llego pudo Guido entender lo que habia pasado. "-¡Por fin! Mi primer trabajo." penso guido alegremente. Pero no estaba preparado para afrontar lo que se iba a encontrar.
 
 
-# Introducción
+## Introducción
 
 Se suele decir que la muerte es certera pero... ¿es precisa? Acompaña a Guido, un estudiante de estadistica, que como parte de su nuevo trabajo tiene que, con la información que posee, estimar a que hora se produjo un asesinato en la ciudad de Salsipuedes.
 
 
-## Capitulo 1: Entender la metodologia
+# Capitulo 1: Luego de la muerte, ¿Qué ocurre?
   
 Al llegar, Guido presencio el caos de la escena instantaneamente. Muebles volcados y destrozados. Utensilios de cocina desparramados y manchados. La brisa matutina se abría paso por los vidrios estallados y la débil luz de los móviles policiales dejaban ver que el cuerpo de Sergio Contreras yacía en un charco de sangre hacia un extremo del salón. Sorprendentemente, recordando lo que estudio, salio de su estupor y fue a preguntar los hechos del caso.
 
@@ -129,7 +129,7 @@ ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuou
 
 # Capitulo 2: Ademas de que esta muerto, ¿Que sabemos?
 
-Luego de que Martina, una policia que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadistico le pregunta "-¿Y a que hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitas alguna información mas Guido?". Sin mirarle a los ojos, Guido saca su celular, busca la temperatura ambiente actual y dice expectante "-No te preocupes doc, ya tengo todo lo que necesito". Pero Guido, ¿tiene todo lo que necesita? 
+Luego de que Martina, una policia que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadistico le pregunta "-¿Y a que hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitas alguna información mas Guido?". Sin mirarle a los ojos, Guido saca su celular, observa la hora, busca la temperatura ambiente actual y dice expectante "-No te preocupes doc, ya tengo todo lo que necesito". Pero Guido, ¿tiene todo lo que necesita? 
 
 ## Distribuciones a *priori*
 
@@ -269,7 +269,7 @@ varia = abs(rnorm(1000, mean = 0, sd = 0.01))
 x = -rgamma(1000, shape = 5, scale = 0.1) + 5.883
 prior = data.frame(beta0, beta1, x)
 
-grid <- seq(4, 14, length.out = 100)
+grid <- seq(4, 24, length.out = 100)
 mu_prior_matrix <- matrix(nrow = 1000, ncol = 100)
 
 for (i in seq_along(grid)) {
@@ -312,7 +312,7 @@ ggplot(data_mu_prior) +
                                 "12:00", "14:00", "16:00", "18:00",
                                 "20:00", "22:00", "00:00"),
                      name = "Hora") +
-  scale_y_continuous(name = "Temperatura (°C)", breaks = c(37.5, 36, 35, 32.5, 30, 27.5, 25, 22)) +
+  scale_y_continuous(name = "Temperatura (°C)", breaks = c(40, 37.5, 36, 35, 32.5, 30, 27.5, 25, 22)) +
   geom_text(x = 10, y = 36.75, label = "Rango de temperatura inicial", color = "#333333", size = 3) +
   geom_text(x = 5.40, y = 28, label = "Llegada de los policias", angle = 90, color = "#333333", size = 3)
 
@@ -328,9 +328,132 @@ En la figura 8 se obserba que entre las 4:30 y las 6:00 es donde el cuerpo tiene
 Despues de volver de la estación de servicio, mientras los demas miembros del equipo sacan fotos y recogen pruebas de la escena, nuestro protagonista observa detenidamente el proceso reflexionando sobre el ambiente. -"¿Hoy es un día lúgubre porque ocurrió un asesinato, o ocurrió un asesinato porque es un día lúgubre?" Pero antes de poder continuar con su meditaciones, observa atentamente como el doctor le toma la temperatura al cadaver antes de envolverlo en una bolsa de óbito. -"Esta vez tiene una temperatura de 30.5 ºC." dice el doctor con súbito sosiego. -"Ahora lo transportan a la morgue en Capital para que le hagan la autopsia. ¿Queres los resultados de la autopsia?". "Bueno doc, pero no le veo profunda utilidad a dicha información.". Al tener todos los datos que creia necesario, Guido suspira con anticipo y se dirige al auto para que lo devuelvan a su casa.
 
 
+## cosas
+
+Si se utiliza toda la información postulada en el capitulo 2, se puede plantear el siguiente modelo con los supuestos detallados en el mismo capitulo.
+
+$$Y_i|\beta_0, \beta_1, h_m,\sigma \sim Normal(\mu_i,\sigma)$$ 
+Con: $\mu_i = \beta_0 + \beta_1  (h_i-h_m)$
+
+
+La temperatura del cuerpo a las 6:45 es de 32.8 ºC, es decir, $h_1=6.75$ y $Y_1=ln(32.8-22)=2.55$. Entonces, se obtiene la distribución a posteriori del modelo al incorporar esta información. Esto se logra mediante la aplicación del algoritmo Hamiltonian Montecarlo a traves del lenguaje Stan.
+
+```{r, echo = FALSE, fig.cap = "Trace plots de las cadenas de cada parametro"}
+load("posteriors_stan.Rdata")
+modelo1obs %>% 
+  setNames(c("Beta 0", "Beta1", "Sigma", "Hora de la muerte", "5", "6", "7", "8"))  %>% 
+  traceplot(pars = c("b0", "b1", "sigma", "x")) + labs(colour="Cadenas")
+```
+Todos los parametros tienen un $\hat{R}$ igual a 1, por lo que las distintas cadenas convergen a la misma distribución.
+
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Parametro & 2.5\% & Media & 97.5\% & $N_{neef}$ \\ \hline
+$\beta_0$ & 2.67  & 2.7   & 2.73   & 8002       \\ \hline
+$\beta_1$ & -0.27 & -0.23 & -0.22  & 1694       \\ \hline
+$\sigma$  & 0     & 0.01  & 0.02   & 1981       \\ \hline
+$h_m$     & 5.06  & 5.35  & 5.58   & 2636       \\ \hline
+\end{tabular}
+\caption{Estadísticas del $\textit{posterior}$ de cada parametro}
+\label{table:1}
+\end{center}
+\end{table}
 
 
 
+
+Una vez ajustado el modelo, consecuentemente se obtiene la distribución a posteriori de la hora de muerte de Sergio.
+
+```{r, echo = FALSE, fig.cap = "Distribución a posteriori de la hora de muerte"}
+posterior1 <- data.frame(extract(modelo1obs, c("b0", "b1", "x" ,"sigma")), observaciones = "1 observación")
+set.seed(123)
+gamma_1 = -rgamma(27000,shape = 5, scale = .1)+5.883
+
+
+grafico_post_x_1 = data.frame(x = c(as.numeric(posterior1$x),gamma_1), color = rep(c("Posterior", "Prior"), each = 27000))
+
+ggplot(grafico_post_x_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) 
+
+ic_1 = quantile(posterior1$x,c(.025, .5,.975))
+
+
+```
+
+Utilizando solo la primera medición de la temperatura del cuerpo, con una probabilidad del 95%, la hora de muerte se encuentra entre las 5:04 y las 5:35, y su mediana es las 5:21. 
+
+Al incorporar informarción, se redujo la incertidumbre sobre la hora de muerte de Sergio, pero usar tan solo una observación, realmente no se puede obtener una mejoria sustancial de la creencia de los parametros $\beta_0$ y $\beta_1$, ya que estos necesitan mas de una observación para poder reducir la incerteza sobre  ellos correctamente.
+
+```{r, echo = FALSE}
+grafico_post_b0_1 = data.frame(x = c(as.numeric(posterior1$b0),rnorm(27000,2.69,0.017)), color = rep(c("Posterior", "Prior"), each = 27000))
+
+ggplot(grafico_post_b0_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) 
+```
+
+
+```{r, echo = FALSE}
+grafico_post_b1_1 = data.frame(x = c(as.numeric(posterior1$b1),rnorm(27000,-0.248,0.018)), color = rep(c("Posterior", "Prior"), each = 27000))
+
+ggplot(grafico_post_b1_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) 
+
+```
+
+
+
+
+```{r, echo = FALSE}
+predicciones1 <- data.frame(y = exp(extract(modelo1obs, "log_dif_temp")$log_dif_temp) + 22, x = 6.75)
+
+x_grid <- seq(4, 24, length.out = 100)
+mu_matrix <- matrix(nrow = 27000, ncol = 100)
+
+for (i in seq_along(x_grid)) {
+  mu_matrix[, i] <- exp(posterior1$b0 + posterior1$b1 * (x_grid[i] - posterior1$x)) + 22
+}
+
+mu_mean <- apply(mu_matrix, 2, mean)
+mu_qts <- t(apply(mu_matrix, 2, function(x) quantile(x, c(0.025, 0.975))))
+mu_qts2 <- t(apply(mu_matrix, 2, function(x) quantile(x, c(0.25, 0.75))))
+
+data_mu <- data.frame(
+  x = x_grid, 
+  y = mu_mean,
+  lower_95 = mu_qts[, 1],
+  upper_95 = mu_qts[, 2],
+  lower_50 = mu_qts2[, 1],
+  upper_50 = mu_qts2[, 2]
+)
+
+ggplot() + 
+  geom_ribbon(
+    aes(x, ymin = lower_95, ymax = upper_95),
+    fill = "grey50",
+    alpha = 0.6,
+    data = data_mu
+  ) +
+  geom_ribbon(
+    aes(x, ymin = lower_50, ymax = upper_50),
+    fill = "grey35",
+    alpha = 0.6,
+    data = data_mu
+  ) +
+  geom_line(
+    aes(x, y), 
+    color = "firebrick",
+    data = data_mu
+  ) +
+  scale_y_continuous(breaks = seq(22, 44, 2),
+                     name = "Temperatura (ºC)") + 
+  scale_x_continuous(limits = c(4, 24), breaks = seq(4, 24, 2), 
+                     labels = c("4:00", "6:00", "8:00", "10:00",
+                                "12:00", "14:00", "16:00", "18:00", "20:00", "22:00", "00:00"), 
+                     name = "Hora") +
+  geom_point(aes(x = c(6.75), y = c(32.8)),
+             shape = 13, size = 2, color = "red") +
+  theme_bw()
+```
 
 
 
