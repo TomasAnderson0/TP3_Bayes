@@ -58,43 +58,8 @@ ggplot(data_mu_prior) +
   geom_text(x = 5.40, y = 27.5, label = "Llegada de los policias", angle = 90, color = "#333333")
 
 
-grafico <- NA
-for(i in  1:1000) {
- y <-  prior$beta0[i] + prior$beta1[i] * (seq(3.5, 24, length.out = 100) - x[i])
- x1 <- seq(3.5, 24, length.out = 100)
- muestra <- i
- lol <- cbind(y, x1, muestra)
- grafico <- rbind(grafico, lol)
-}
-
-grafico <- data.frame(grafico)
-grafico$muestra <- as.factor(grafico$muestra)
-View(grafico)
-ggplot(grafico) + aes(x = x1, y = y, group = muestra) + geom_line(alpha = 0.1) + theme(legend.position = "none")
-
-ggplot(grafico) + aes(x = x1, y = (exp(y) + 22), group = muestra) + geom_line(alpha = 0.1) +
-  geom_hline(yintercept = c(37.5, 36), color = "green") +
-  geom_vline(xintercept = c(5.83), color = "blue") + theme_bw() +
-  scale_x_continuous(breaks = c(4, 5.83, 8, 10, 12, 14, 16, 18, 20, 22, 24),
-                     labels = c("4:00", "5:53", "8:00", "10:00",
-                                "12:00", "14:00", "16:00", "18:00",
-                                "20:00", "22:00", "00:00"),
-                     name = "Hora") +
-  scale_y_continuous(name = "Temperatura (°C)", breaks = c(37.5, 36, 35, 32.5, 30, 27.5, 25, 22),
-                     limits = c(22, 40)) 
-
-
-dgamma(seq(0,5, length.out = 100), shape = 2, scale = 0.5)
-ggplot() + aes(y = dgamma(seq(0,5, length.out = 100), shape = 2, scale = 0.4), x = (-(seq(0,5, length.out = 100)) + 5.883)) +
-  geom_line() + geom_vline(xintercept = 5.5)
 
 # Correr el modelo Stan y ver los posterior
-
-init_list <- list(
-  list(b0 = 2.7, b1 = 0.25, sigma = , x =),
-  list(a = 0.5, b = -0.1),
-  list(a = 0.2, b = 0.05)
-)
 
 primera_obs <- list(
   N = 1, 
@@ -115,7 +80,6 @@ modelo1obs <- stan(
 )
 
 traceplot(modelo1obs)
-modelo1obs
 posterior1 <- data.frame(extract(modelo1obs, c("b0", "b1", "x" ,"sigma")), observaciones = "1 observación")
 ggplot(posterior1) + aes(x = b0) + geom_histogram() + geom_line(aes(x = seq(2.64, 2.76, length.out = 27000), y = 125*dnorm(seq(2.64, 2.76, length.out = 27000), mean = 2.69, sd = 0.017)))
 ggplot(posterior1) + aes(x = b1) + geom_histogram() + geom_line(aes(x = seq(-0.3, -0.175, length.out = 27000), y = 120*dnorm(seq(-0.3, -0.175, length.out = 27000), mean = -0.2465, sd = 0.015)))
