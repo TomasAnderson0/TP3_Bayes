@@ -335,7 +335,7 @@ En la figura 8 se obserba que entre las 4:30 y las 6:00 es donde el cuerpo tiene
 Despues de volver de la estación de servicio, mientras los demas miembros del equipo sacan fotos y recogen pruebas de la escena, nuestro protagonista observa detenidamente el proceso reflexionando sobre el ambiente. -"¿Hoy es un día lúgubre porque ocurrió un asesinato, o ocurrió un asesinato porque es un día lúgubre?" Pero antes de poder continuar con su meditaciones, observa atentamente como el doctor le toma la temperatura al cadaver antes de envolverlo en una bolsa de óbito. -"Esta vez tiene una temperatura de 30.5 ºC." dice el doctor con súbito sosiego. -"Ahora lo transportan a la morgue en Capital para que le hagan la autopsia. ¿Queres los resultados de la autopsia?". "Bueno doc, pero no le veo profunda utilidad a dicha información.". Al tener todos los datos que creia necesario, Guido suspira con anticipo y se dirige al auto para que lo devuelvan a su casa.
 
 
-## cosas
+## *Posterior* de los parametros con una observación
 
 Si se utiliza toda la información postulada en el capitulo 2, se puede plantear el siguiente modelo con los supuestos detallados en el mismo capitulo.
 
@@ -471,6 +471,8 @@ ggplot() +
 
 
 
+# Capitulo 4: No siempre es bueno usar protección
 
+Luego de volver a su casa Guido se prepara un cafe y comienza a armar el informe sobre el caso. Utilizando toda la información que recolecto llega a una hora de muerte estimada. Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Al ser de caracter curioso, Guido decide ver que pasaria si agrega esta observación a su análisis. "-Como sospechaba, no es util esto." dice el joven con un aire de confianza. "Supongo que solo queda mandar el informe."
   
   
