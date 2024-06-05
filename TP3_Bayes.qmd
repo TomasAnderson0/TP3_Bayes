@@ -100,7 +100,8 @@ T_valores_1 = T_fun(23, 37, .1, seq(0,75,1))
 T_valores_2 = T_fun(23, 37, .3, seq(0,75,1))
 datos_T = data.frame(x = seq(0,75,1), y = c(T_valores_1, T_valores_2), r = rep(c("0.1", "0.3"), each = 76)) 
 
-ggplot(datos_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuous(name = "T(t)") + scale_x_continuous(name = "t")
+ggplot(datos_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuous(name = "T(t)") + scale_x_continuous(name = "t") +
+  theme_bw()
 ``` 
 
   
@@ -123,7 +124,8 @@ ln_T_valores_1 = log(T_valores_1-23)
 ln_T_valores_2 = log(T_valores_2-23)
 datos_ln_T = data.frame(x = seq(0,75,1), y = c(ln_T_valores_1, ln_T_valores_2), r = rep(c("0.1", "0.3"), each = 76)) 
 
-ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuous(name = "Y(t)") + scale_x_continuous(name = "t")
+ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuous(name = "Y(t)") + scale_x_continuous(name = "t") +
+  theme_bw()
 ```
 
 
@@ -166,10 +168,11 @@ $$\beta_0 \sim Normal(2.69,0.017)$$
 ```{r, echo = FALSE, fig.cap = "Distribución a priori de beta 0"}
 seq_beta0 = seq(log(36-22),log(37.5-22),length.out = 1000)
 df_beta0 = data.frame(y = dnorm(seq_beta0, 2.69, 0.017), x = seq_beta0)
-ggplot(df_beta0) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta0", breaks = round(seq(log(36-22),log(37.5-22),length.out = 7),3)) + scale_y_continuous(name = "Densidad")
+ggplot(df_beta0) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta0", breaks = round(seq(log(36-22),log(37.5-22),length.out = 7),3)) + scale_y_continuous(name = "Densidad") +
+  theme_bw()
 
-norm_t = data.frame(x = exp(rnorm(100000, 2.69, 0.017))+22)
-ggplot(norm_t)+ geom_density(aes(x = x, y = after_stat(density)), color = "red", size = 1)
+# norm_t = data.frame(x = exp(rnorm(100000, 2.69, 0.017))+22)
+# ggplot(norm_t)+ geom_density(aes(x = x, y = after_stat(density)), color = "red", linewidth = 1)
 ```
 
 
@@ -210,7 +213,7 @@ $$\beta_1 \sim Normal(-0.248,0.018)$$
 ```{r, echo = FALSE, fig.cap = "Distribución a priori de beta 1"}
 seq_beta1 = seq(-0.19,-0.31,length.out = 1000)
 df_beta1 = data.frame(y = dnorm(seq_beta1, r_mu, r_sigma), x = seq_beta1)
-ggplot(df_beta1) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta1", breaks = round(seq(r_mu-3*r_sigma,r_mu+3*r_sigma,length.out = 7),3))  + scale_y_continuous(name = "Densidad")
+ggplot(df_beta1) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta1", breaks = round(seq(r_mu-3*r_sigma,r_mu+3*r_sigma,length.out = 7),3))  + scale_y_continuous(name = "Densidad") + theme_bw()
 ```
 
 
@@ -227,7 +230,10 @@ $$h_m \sim (-1)*Gama(5,0.1)+5.883$$
 ```{r, echo = FALSE, fig.cap = "Distribución a priori de la hora de muerte"}
 seq_h_m = seq(0,1.5,length.out = 1000)
 df_h_m = data.frame(y = dgamma(seq_h_m, shape = 5, scale = 0.1), x = -1 * seq_h_m + 5.883)
-ggplot(df_h_m) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Hora de la muerte", breaks = round(seq(4,5.883,length.out = 7),3))  + scale_y_continuous(name = "Densidad")
+ggplot(df_h_m) + geom_line(aes(x = x, y = y)) + 
+  scale_x_continuous(name = "Hora de la muerte", breaks = c(4.5, 5, 5.5, 5.883),
+                     labels = c("4:30", "5:00", "5:30", "5:52"))  + scale_y_continuous(name = "Densidad") +
+  theme_bw()
 ```
 
 
@@ -251,7 +257,8 @@ $$\sigma \sim Normal_+(0,0.01)$$
 ```{r, echo = FALSE, fig.cap = "Distribución a priori del error de medición"}
 seq_sigma = seq(-0.033,0.033,length.out = 1000)
 df_sigma = data.frame(y = 2*abs(dnorm(seq_sigma, 0, 0.01)), x = abs(seq_sigma))
-ggplot(df_sigma) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Sigma", breaks = round(seq(0,sigma_max,length.out = 4),3))  + scale_y_continuous(name = "Densidad")
+ggplot(df_sigma) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Sigma", breaks = round(seq(0,sigma_max,length.out = 4),3))  + scale_y_continuous(name = "Densidad") +
+  theme_bw()
 
 
 ```
