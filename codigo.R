@@ -193,6 +193,8 @@ data_mu2 <- data.frame(
   upper_50 = mu_qts22[, 2]
 )
 
+# ------------ SIN ZOOM -----------------
+
 ggplot() + 
   geom_ribbon(
     aes(x, ymin = lower_95, ymax = upper_95),
@@ -223,6 +225,8 @@ ggplot() +
   geom_point(aes(x = c(6.75, 8.25), y = c(32.8, 30.5)),
              shape = 13, size = 2, color = "red") +
   theme_bw()
+
+# ----------- CON ZOOM ------------------
 
 ggplot() + 
   geom_ribbon(
@@ -294,8 +298,8 @@ predicciones3 <- data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_
 predicciones3 <- rbind(data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,2]) + 22, x = 8.25), predicciones3)
 predicciones3 <- rbind(data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,3]) + 22, x = 13.5), predicciones3)
 
-x_grid3 <- seq(4, 14, length.out = 100)
-mu_matrix3 <- matrix(nrow = 27000, ncol = 100)
+x_grid3 <- seq(4, 24, length.out = 200)
+mu_matrix3 <- matrix(nrow = 27000, ncol = 200)
 
 for (i in seq_along(x_grid3)) {
   mu_matrix3[, i] <- exp(posterior3$b0 + posterior3$b1 * (x_grid3[i] - posterior3$x)) + 22
@@ -313,6 +317,8 @@ data_mu3 <- data.frame(
   lower_50 = mu_qts23[, 1],
   upper_50 = mu_qts23[, 2]
 )
+
+# ------------ SIN ZOOM -----------------
 
 ggplot() + 
   geom_ribbon(
@@ -334,12 +340,46 @@ ggplot() +
   ) +
   stat_summary(data = predicciones3, fun.data = mean_sdl,
                mapping = aes(x = x, y = y), color = "blue", size = 0.5) +
-  scale_x_continuous(breaks = c(4, 5.83, 8, 10, 12, 14, 16, 18, 20, 22, 24),
-                     labels = c("4:00", "5:53", "8:00", "10:00",
-                                "12:00", "14:00", "16:00", "18:00",
-                                "20:00", "22:00", "00:00"),
+  scale_y_continuous(breaks = seq(22, 44, 2),
+                     name = "Temperatura (ºC)") + 
+  scale_x_continuous(limits = c(4, 24), breaks = seq(4, 24, 2), 
+                     labels = c("4:00", "6:00", "8:00", "10:00",
+                                "12:00", "14:00", "16:00","18:00",
+                                "20:00", "22:00", "00:00"), 
                      name = "Hora") +
-  scale_y_continuous(name = "Temperatura (°C)", breaks = c(42.5, 40, 37.5, 36, 35, 32.5, 30, 27.5, 25, 22)) +
+  geom_point(aes(x = c(6.75, 8.25, 13.5), y = c(32.8, 30.5, 23.7)),
+             shape = 13, size = 2, color = "red") +
+  theme_bw()
+
+# ----------- CON ZOOM ------------------
+
+ggplot() + 
+  geom_ribbon(
+    aes(x, ymin = lower_95, ymax = upper_95),
+    fill = "grey50",
+    alpha = 0.6,
+    data = data_mu3
+  ) +
+  geom_ribbon(
+    aes(x, ymin = lower_50, ymax = upper_50),
+    fill = "grey35",
+    alpha = 0.6,
+    data = data_mu3
+  ) +
+  geom_line(
+    aes(x, y), 
+    color = "firebrick",
+    data = data_mu3
+  ) +
+  stat_summary(data = predicciones3, fun.data = mean_sdl,
+               mapping = aes(x = x, y = y), color = "blue", size = 0.5) +
+  scale_y_continuous(name = "Temperatura (°C)",
+                     breaks = c(42.5, 40, 37.5, 36, 35,
+                                32.5, 30, 27.5, 25, 22),
+                     limits = c(23, 36.5)) +
+  scale_x_continuous(limits = c(6, 14), breaks = seq(6, 14, 2), 
+                     labels = c("6:00", "8:00", "10:00", "12:00", "14:00"), 
+                     name = "Hora") +
   geom_point(aes(x = c(6.75, 8.25, 13.5), y = c(32.8, 30.5, 23.7)),
              shape = 13, size = 2, color = "red") +
   theme_bw()
