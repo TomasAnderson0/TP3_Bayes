@@ -825,6 +825,19 @@ Según el modelo con 3 observaciones, la distribución de la temperatura del cue
 
 # Capítulo 5: Divagaciones de un 
 
+Guido se pone a llorar, Guido no es 100tífico
+
+Indudablemente, el modelo con 3 observaciones no es uno que se pueda usar para realizar una estimación certera de la hora muerte. Una de las posibles causas es que la última medición de la temperatura de Sergio no es verídica. Al cambiar las condiciones donde el cuerpo reside y además perder el seguimiento hasta su autopsia, las posibilidades de que la última medición sea incorrecta son altas.
+
+O bien, en el caso de que las tres observaciones sean verídicas, el planteamiento teórico del modelo y del intercambio de temperatura pueden llegar a ser erróneos, por lo que los datos observados no pueden tomar la forma que se espera.
+
+Por lo postulado anteriormente, de los tres modelos planteados, el mejor podría llegar a ser aquel que utiliza 2 observaciones, aunque no existe seguridad alguna de ello.
+
+Adicionalmente, todos los modelos propuestos suponen que Sergio se encontraba en un estado saludable al momento de morir. El incumplimiento de dicha suposición puede perjudicar las estimaciones al usar distribuciones a *priori* incorrectas. En este caso, sería correcto aumentar la incertidumbre sobre el $\beta_0$, además de que la construcción de los posibles valores para $\beta_1$, por cómo se estima en este trabajo, cambiaría porque dependen del $\beta_0$.
+
+Entonces, ¿Cuándo murió Sergio?
+
+
 
 # Epílogo
 
