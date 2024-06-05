@@ -57,6 +57,7 @@ Docentes: Ignacio Evangelista - Tomás Capretto
 library(tidyverse)
 library(ggplot2)
 library(rstan)
+library(gridExtra)
 ```
 ## Prologo
 
@@ -364,7 +365,7 @@ $\beta_1$ & -0.27 & -0.23 & -0.22  & 1694       \\ \hline
 $\sigma$  & 0     & 0.01  & 0.02   & 1981       \\ \hline
 $h_m$     & 5.06  & 5.35  & 5.58   & 2636       \\ \hline
 \end{tabular}
-\caption{Estadísticas del $\textit{posterior}$ de cada parametro}
+\caption{Estadísticas del $\textit{posterior}$ de cada parametro con una observación}
 \label{table:1}
 \end{center}
 \end{table}
@@ -393,13 +394,13 @@ ic_1 = quantile(posterior1$x,c(.025, .5,.975))
 
 Utilizando solo la primera medición de la temperatura del cuerpo, con una probabilidad del 95%, la hora de muerte se encuentra entre las 5:04 y las 5:35, y su mediana es las 5:21. 
 
-Al incorporar informarción, se redujo la incertidumbre sobre la hora de muerte de Sergio, pero usar tan solo una observación, realmente no se puede obtener una mejoria sustancial de la creencia de los parametros $\beta_0$ y $\beta_1$, ya que estos necesitan mas de una observación para poder reducir la incerteza sobre  ellos correctamente.
+Al incorporar nueva informarción, se redujo la incertidumbre sobre la hora de muerte de Sergio, pero al usar tan solo una observación, realmente no se puede obtener una mejoria sustancial de la creencia de los parametros $\beta_0$, $\beta_1$ y $\sigma$, ya que estos necesitan mas de una observación para poder reducir la incerteza sobre  ellos correctamente.
 
 ```{r, echo = FALSE, fig.cap = "Distribución a posteriori de beta0"}
 grafico_post_b0_1 = data.frame(x = c(as.numeric(posterior1$b0),rnorm(27000,2.69,0.017)), color = rep(c("Posterior", "Prior"), each = 27000))
 
-ggplot(grafico_post_b0_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) +  scale_fill_discrete(name = "", labels = c("1 observación", "Prior")) + scale_x_continuous(name = "Beta0") + scale_y_continuous(name = "Densidad") +
-  theme(legend.position = "top") + theme_bw()
+ggplot(grafico_post_b0_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) +  scale_fill_discrete(name = "", labels = c("1 observación", "Prior")) + scale_x_continuous(name = "Beta0") + scale_y_continuous(name = "Densidad") + theme_bw() + theme(legend.position = "top")
+
 ```
 
 
@@ -408,15 +409,25 @@ grafico_post_b1_1 = data.frame(x = c(as.numeric(posterior1$b1),rnorm(27000,-0.24
 
 ggplot(grafico_post_b1_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) + 
   scale_fill_discrete(name = "", labels = c("1 observación", "Prior")) + scale_x_continuous(name = "Beta1") +
-  scale_y_continuous(name = "Densidad") +
-  theme(legend.position = "top") + theme_bw()
+  scale_y_continuous(name = "Densidad") + theme_bw() +
+  theme(legend.position = "top")
+
+```
+
+```{r, echo = FALSE, fig.cap = "Distribución a posteriori del error de medición"}
+grafico_post_sigma_1 = data.frame(x = c(as.numeric(posterior1$sigma),abs(rnorm(27000, 0 ,0.01))), color = rep(c("Posterior", "Prior"), each = 27000))
+
+ggplot(grafico_post_sigma_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) + 
+  scale_fill_discrete(name = "", labels = c("1 observación", "Prior")) + scale_x_continuous(name = "Sigma") +
+  scale_y_continuous(name = "Densidad") +  theme_bw() +
+  theme(legend.position = "top")
 
 ```
 
 
+Al actualizar el modelo con una observación y realizar la transformación necesaria para volver a la escala original, se obtiene la siguiente predicción de la temperatura de Sergio a traves del tiempo.
 
-
-```{r, echo = FALSE}
+```{r, echo = FALSE, fig.cap = "Temperatura del cuerpo de Sergio incorporando una obserción al modelo"}
 predicciones1 <- data.frame(y = exp(extract(modelo1obs, "log_dif_temp")$log_dif_temp) + 22, x = 6.75)
 
 x_grid <- seq(4, 24, length.out = 100)
@@ -468,11 +479,179 @@ ggplot() +
   theme_bw()
 ```
 
-
-
+Al tener una sola observación, no se puede obtener una representación fidedigna de la hora de muerte.
 
 # Capitulo 4: No siempre es bueno usar protección
 
 Luego de volver a su casa Guido se prepara un cafe y comienza a armar el informe sobre el caso. Utilizando toda la información que recolecto llega a una hora de muerte estimada. Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Al ser de caracter curioso, Guido decide ver que pasaria si agrega esta observación a su análisis. "-Como sospechaba, no es util esto." dice el joven con un aire de confianza. "Supongo que solo queda mandar el informe."
-  
-  
+
+
+## *Posterior* de los parametros con dos observaciones
+
+En el capitulo anterior se trabajo con toda la información obtenida hasta el capitulo 2, pero es un sinsentido no utilizar la totalidad de lo que se sabe. Incorporando al modelo la segunda observación de 30.5 ºC de temperatura del cuerpo, se obtienen los siguientes resultados.
+
+
+```{r, echo = FALSE, fig.cap = "titulo"}
+modelo2obs %>% 
+  setNames(c("Beta 0", "Beta1", "Sigma", "Hora de la muerte", "5", "6", "7", "8", "9", "10", "11"))  %>% 
+  traceplot(pars = c("b0", "b1", "sigma", "x")) + labs(colour="Cadenas")
+```
+
+
+Todos los parametros tienen un $\hat{R}$ igual a 1, por lo que las distintas cadenas convergen a la misma distribución.
+
+
+\begin{table}[]
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Parametro & 2.5\% & Media & 97.5\% & $N_{neef}$ \\ \hline
+$\beta_0$ & 2.67  & 2.70   & 2.73   & 9043       \\ \hline
+$\beta_1$ & -0.22 & -0.19 & -0.16  & 4989       \\ \hline
+$\sigma$  & 0.00    & 0.02  & 0.03   & 5530       \\ \hline
+$h_m$     & 4.67  & 5.09  & 5.49   & 5222       \\ \hline
+\end{tabular}
+\caption{Estadísticas del $\textit{posterior}$ de cada parametro con dos observaciones}
+\label{table:1}
+\end{center}
+\end{table}
+
+Para observar mejor los cambios de los *posteriors* entre el modelo ajustado con una observación y el ajustado con dos, se presentan los siguientes graficos.
+
+```{r, echo = FALSE, fig.cap = "Comp titulu"}
+posterior2 <- data.frame(extract(modelo2obs, c("b0", "b1", "x" ,"sigma")), observaciones = "2 observaciones")
+posterior12 <- rbind(posterior1, posterior2)
+# posterior12_comb = data.frame(x = c(posterior1$b0, posterior1$b1, posterior1$sigma, posterior1$x, posterior2$b0, posterior2$b1, posterior2$sigma, posterior2$x), observaciones = rep(c("1 observación","2 observaciones"), each = 27000*4), parametro = rep(rep(c("b0", "b1", "x" ,"sigma"), each = 27000), times = 2))
+
+
+plot_post12_1 = ggplot(posterior12) + aes(x = b0, fill = observaciones) + geom_density(alpha = 0.5) + scale_fill_discrete(name = "Posterior") + scale_y_continuous(name = "Densidad") + scale_x_continuous(name = "Beta 0")+ theme(legend.position = "top")
+plot_post12_2 = ggplot(posterior12) + aes(x = b1, fill = observaciones) + geom_density(alpha = 0.5) + scale_fill_discrete(name = "Posterior") + scale_y_continuous(name = "Densidad") + scale_x_continuous(name = "Beta 1")+ theme(legend.position = "top")
+plot_post12_3 = ggplot(posterior12) + aes(x = sigma, fill = observaciones) + geom_density(alpha = 0.5) + scale_fill_discrete(name = "Posterior") + scale_y_continuous(name = "Densidad") + scale_x_continuous(name = "Sigma")+ theme(legend.position = "top")
+plot_post12_4 = ggplot(posterior12) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.5) + scale_fill_discrete(name = "Posterior") + scale_y_continuous(name = "Densidad") + scale_x_continuous(name = "Hora de muerte") + theme(legend.position = "top")
+
+
+grid.arrange(plot_post12_1,plot_post12_2,plot_post12_3,plot_post12_4)
+
+ic_2 = quantile(posterior2$x, c(.025, .5, .975))
+```
+
+En la figura x se observa que los *posteriors* de $\beta_1$, $\sigma$ y la hora de muerte cambian sustancialmente. La distribución de $\beta_1$ se traslada hacia la derecha, por lo que la velocidad a la que el cuerpo pierde calor es menor. A la distribución de $\sigma$ le ocurre lo mismo, por lo que el error de medición sera mas grande. Y por ultimo, la creencia de la hora de muerte se ve desplazada a la izquiera y se torna mas variable. Entonces, el nuevo intervalo de confianza para ella sera de las 4:40 y las 5:29.
+
+
+
+
+
+Al actualizar el modelo con la segunda observación y realizar la transformación necesaria para volver a la escala original, se obtiene la siguiente predicción de la temperatura de Sergio a traves del tiempo.
+
+```{r, echo = FALSE, fig.cap = "titulo"}
+predicciones2 <- data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,1]) + 22, x = 6.75)
+predicciones2 <- rbind(data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,2]) + 22, x = 8.25), predicciones2)
+
+x_grid2 <- seq(4, 24, length.out = 200)
+mu_matrix2 <- matrix(nrow = 27000, ncol = 200)
+
+for (i in seq_along(x_grid2)) {
+  mu_matrix2[, i] <- exp(posterior2$b0 + posterior2$b1 * (x_grid2[i] - posterior2$x)) + 22
+}
+
+mu_mean2 <- apply(mu_matrix2, 2, mean)
+mu_qts2 <- t(apply(mu_matrix2, 2, function(x) quantile(x, c(0.025, 0.975))))
+mu_qts22 <- t(apply(mu_matrix2, 2, function(x) quantile(x, c(0.25, 0.75))))
+
+data_mu2 <- data.frame(
+  x = x_grid2, 
+  y = mu_mean2,
+  lower_95 = mu_qts2[, 1],
+  upper_95 = mu_qts2[, 2],
+  lower_50 = mu_qts22[, 1],
+  upper_50 = mu_qts22[, 2]
+)
+
+# ------------ SIN ZOOM -----------------
+
+ggplot() + 
+  geom_ribbon(
+    aes(x, ymin = lower_95, ymax = upper_95),
+    fill = "grey50",
+    alpha = 0.6,
+    data = data_mu2
+  ) +
+  geom_ribbon(
+    aes(x, ymin = lower_50, ymax = upper_50),
+    fill = "grey35",
+    alpha = 0.6,
+    data = data_mu2
+  ) +
+  geom_line(
+    aes(x, y), 
+    color = "firebrick",
+    data = data_mu2
+  ) +
+  scale_y_continuous(breaks = seq(22, 44, 2),
+                     name = "Temperatura (ºC)") + 
+  scale_x_continuous(limits = c(4, 24), breaks = seq(4, 24, 2), 
+                     labels = c("4:00", "6:00", "8:00", "10:00",
+                                "12:00", "14:00", "16:00","18:00",
+                                "20:00", "22:00", "00:00"), 
+                     name = "Hora") +
+  geom_point(aes(x = c(6.75, 8.25), y = c(32.8, 30.5)),
+             shape = 13, size = 2, color = "red") +
+  theme_bw()
+
+```
+
+
+Para cercionarse de que el ajuste es correcto, se realiza una validación interna obteniendose de réplicas del conjunto de datos y comparandolas con los datos reales.
+
+
+```{r, echo = FALSE, fig.cap = "titulo", warning = FALSE}
+# ----------- CON ZOOM ------------------
+ggplot() + 
+  geom_ribbon(
+    aes(x, ymin = lower_95, ymax = upper_95),
+    fill = "grey50",
+    alpha = 0.6,
+    data = data_mu2
+  ) +
+  geom_ribbon(
+    aes(x, ymin = lower_50, ymax = upper_50),
+    fill = "grey35",
+    alpha = 0.6,
+    data = data_mu2
+  ) +
+  geom_line(
+    aes(x, y), 
+    color = "firebrick",
+    data = data_mu2
+  ) +
+  stat_summary(data = predicciones2, fun.data = mean_sdl,
+               mapping = aes(x = x, y = y), color = "darkgreen", size = 0.5) +
+  scale_y_continuous(name = "Temperatura (°C)",
+                     breaks = c(42.5, 40, 37.5, 36, 35,
+                                32.5, 30, 27.5, 25, 22),
+                     limits = c(27, 36)) +
+  scale_x_continuous(limits = c(6.5, 8.5), breaks = seq(6, 9, 0.5), 
+                     labels = c("6:00", "6:30", "7:00", "7:30",
+                                "8:00", "8:30", "9:00"), 
+                     name = "Hora") +
+  geom_point(aes(x = c(6.75, 8.25), y = c(32.8, 30.5)),
+             shape = 13, size = 2, color = "red") +
+  theme_bw()
+```
+
+Al estar los puntos reales contenidos adentro de la distribución de las réplicas del conjunto de datos, se considera válido el ajuste.
+
+
+## *Posterior* de los parametros con tres observaciones
+
+Teniendo en cuenta la idea de usar toda la información uno podria pensar en utilizar la ultima temperatura brindada de 23.7 ºC. Primero, se mostraran los resultados de añadir dicho dato al modelo y luego se explicara porque, "como Guido predijo", esto no es una sabia decisión.
+
+
+
+# Capitulo 5: Divagaciones de un 
+
+
+# Epilogo
+
+
+
