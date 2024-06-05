@@ -60,21 +60,21 @@ library(rstan)
 ```
 ## Prologo
 
-Era una pacifica madrugada de miércoles en Cordoba, cuando suena un telefono en la cercania. Letargico, luego de dejar sonando unos segundos el celular, Guido abre los ojos desganadamente y comprueba quien es la persona que esta irrumpiendo en su sueño. "-¿El capitan?" piensa Guido dudosamente. Al atender el movil se escucha, "-LLego la hora de tu primer trabajo Guido. Preparate que en 10 minutos te pasan a buscar para ir a Salsipuedes." Como si todavia no hubiese entendido que esta pasando, lentamente Guido salio de su lecho para vestirse con su preciado nuevo uniforme de la policía científica de Córdoba, recien cuando el vehiculo llego pudo Guido entender lo que habia pasado. "-¡Por fin! Mi primer trabajo." penso guido alegremente. Pero no estaba preparado para afrontar lo que se iba a encontrar.
+Era una pacífica madrugada de Miércoles en Córdoba, cuando suena un teléfono en la cercanía. Letárgico, luego de dejar sonando unos segundos el celular, Guido abre los ojos desganadamente y comprueba quién es la persona que está irrumpiendo en su sueño. "-¿El capitán?" piensa Guido dudosamente. Al atender el móvil se escucha, "-LLegó la hora de tu primer trabajo Guido. Preparate que en 10 minutos te pasan a buscar para ir a Salsipuedes." Como si todavía no hubiese entendido qué está pasando, lentamente Guido salió de su lecho para vestirse con su preciado nuevo uniforme de la policía científica de Córdoba, recién cuando el vehículo llegó, pudo Guido entender lo que había pasado. "-¡Por fin! Mi primer trabajo." pensó Guido alegremente. Pero no estaba preparado para afrontar lo que se iba a encontrar.
 
 
 ## Introducción
 
-Se suele decir que la muerte es certera pero... ¿es precisa? Acompaña a Guido, un estudiante de estadistica, que como parte de su nuevo trabajo tiene que, con la información que posee, estimar a que hora se produjo un asesinato en la ciudad de Salsipuedes.
+Se suele decir que la muerte es certera pero... ¿es precisa? Acompaña a Guido, un estudiante de estadística que, como parte de su nuevo trabajo tiene que, con la información que posee, estimar a qué hora se produjo un asesinato en la ciudad de Salsipuedes.
 
 
-# Capitulo 1: Luego de la muerte, ¿Qué ocurre?
+# Capítulo 1: Luego de la muerte, ¿Qué ocurre?
   
-Al llegar, Guido presencio el caos de la escena instantaneamente. Muebles volcados y destrozados. Utensilios de cocina desparramados y manchados. La brisa matutina se abría paso por los vidrios estallados y la débil luz de los móviles policiales dejaban ver que el cuerpo de Sergio Contreras yacía en un charco de sangre hacia un extremo del salón. Sorprendentemente, recordando lo que estudio, salio de su estupor y fue a preguntar los hechos del caso.
+Al llegar, Guido presenció el caos de la escena instantáneamente. Muebles volcados y destrozados. Utensilios de cocina desparramados y manchados. La brisa matutina se abría paso por los vidrios estallados y la débil luz de los móviles policiales dejaban ver que el cuerpo de Sergio Contreras yacía en un charco de sangre hacia un extremo del salón. Sorprendentemente, recordando lo que estudió, salió de su estupor y fue a preguntar los hechos del caso.
 
 ## Medicina forense
 
-Uno de los metodos que se utiliza en la medicina forense para poder estimar la hora del fallecimiento, es el estudio de la temperatura corporal. Cuando alguien fallece, la temperatura del cuerpo ira disminuyendo hasta que este llege a un equilibrio termico con la temperatura ambiente. Dicho proceso se lo conoce como *enfriamiento postmortem* o *algor mortis*. Pero el ritmo al que el cuerpo pierde calor no es constante. Dicho cambio, tambien conocido como ecuación diferencial, satisface la siguiente ley:
+Uno de los métodos que se utiliza en la medicina forense para poder estimar la hora del fallecimiento, es el estudio de la temperatura corporal. Cuando alguien fallece, la temperatura del cuerpo irá disminuyendo hasta que este llege a un equilibrio térmico con la temperatura ambiente. Dicho proceso se lo conoce como *enfriamiento postmortem* o *algor mortis*. Pero el ritmo al que el cuerpo pierde calor no es constante. Dicho cambio se puede expresar como una ecuación diferencial que satisface la siguiente ley:
 
 $$\frac{\mathrm{d}T(t)}{\mathrm{d}t} = r [T_{\text{amb}} - T(t)]$$
 
@@ -131,32 +131,32 @@ ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuou
 
 # Capitulo 2: Ademas de que esta muerto, ¿Que sabemos?
 
-Luego de que Martina, una policia que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadistico le pregunta "-¿Y a que hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitas alguna información mas Guido?". Sin mirarle a los ojos, Guido saca su celular, observa la hora, busca la temperatura ambiente actual y dice expectante "-No te preocupes doc, ya tengo todo lo que necesito". Pero Guido, ¿tiene todo lo que necesita? 
+Luego de que Martina, una policía que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadístico le pregunta "-¿Y a qué hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitás alguna información más Guido?". Sin mirarle a los ojos, Guido saca su celular, observa la hora, busca la temperatura ambiente actual y dice expectante "-No te preocupes doc, ya tengo todo lo que necesito". Pero Guido, ¿tiene todo lo que necesita? 
 
 ## Distribuciones a *priori*
 
-Fundamentalmente, la temperatura del cuerpo de Sergio a traves del tiempo luego de fallecer depende de 4 aspectos:
+Fundamentalmente, la temperatura del cuerpo de Sergio a través del tiempo luego de fallecer depende de 4 aspectos:
 
 -   La temperatura del cuerpo al momento de morir (ºC).
 -   La temperatura ambiente (ºC).
 -   La velocidad en la que la temperatura del cuerpo cae.
--   A que hora fallecio.
+-   A qué hora falleció.
 
-Ademas, hay que tener en cuenta el error de medición que pueda tener el equipo que se use para medir la temperatura.
+Además, hay que tener en cuenta el error de medición que pueda tener el equipo que se use para medir la temperatura.
 
 Pero se requiere que lo que se modele sea una recta, por lo que se trabaja con el logaritmo natural de la diferencia de temperatura del cuerpo y la temperatura del ambiente.
 
 Esto se explicita en el siguiente modelo
 
 $$Y_i|\mu_i,\sigma \sim Normal(\mu_i,\sigma)$$
-Donde: $Y_i = ln(T(t_i)-T_{amb})$, $\mu_i = \beta_0 + \beta_1  t_i$ y $t_i$ es el i-esimo tiempo en horas que paso desde que Sergio murió.
+Donde: $Y_i = ln(T(t_i)-T_{amb})$, $\mu_i = \beta_0 + \beta_1  t_i$ y $t_i$ es el i-ésimo tiempo en horas que pasó desde que Sergio murió.
 
-Se conoce la temperatura ambiente, siendo $T_{amb}=22$ºC. Los valores exactos de los demas parametros se desconocen pero se tiene cierta información sobre ellos.
+Se conoce la temperatura ambiente, siendo $T_{amb}=22$ºC. Los valores exactos de los demás parámetros se desconocen pero se tiene cierta información sobre ellos.
 
 
 ## $\boldsymbol{\beta_0}$: Logaritmo natural de la diferencia entre la temperatura inicial del cuerpo y la ambiente
 
-Se sabe que la temperatura del cuerpo de una persona sana varia entre 36 y 37.5 ºC, por lo que $\beta_0 = ln(T_{diff})$ tiene que estar entre $ln(36)=$ `r round(log(36-22),3)` y $ln(37.5)=$ `r round(log(37.5-22),3)`. Una distribución que representa lo requerido es:
+Se sabe que la temperatura del cuerpo de una persona sana varía entre 36 y 37.5 ºC, por lo que $\beta_0 = ln(T_{diff})$ tiene que estar entre $ln(36)=$ `r round(log(36-22),3)` y $ln(37.5)=$ `r round(log(37.5-22),3)`. Una distribución que representa lo requerido es:
 
 ```{r, echo = FALSE}
 beta0_sigma = (log(37.5-22)-log(36-22))/6
