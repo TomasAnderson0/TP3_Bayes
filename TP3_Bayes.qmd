@@ -318,7 +318,7 @@ Después de volver de la estación de servicio, mientras los demás miembros del
 
 Si se utiliza toda la información postulada en el capítulo 2, se puede plantear el siguiente modelo con los supuestos detallados en el mismo capítulo.
 
-$$Y_i|\beta_0, \beta_1, h_m,\sigma \sim Normal(\mu_i,\sigma)$$ Con: $\mu_i = \beta_0 + \beta_1 (h_i-h_m)$
+$$Y_i|\beta_0, \beta_1, h_m,\sigma \sim Normal(\mu_i,\sigma)$$ Con: $\mu_i = \beta_0 + \beta_1  (h_i-h_m)$
 
 La temperatura del cuerpo a las 6:45 es de 32.8 ºC, es decir, $h_1=6.75$ y $Y_1=ln(32.8-22)=2.55$. Entonces, se obtiene la distribución a posteriori del modelo al incorporar esta información. Esto se logra mediante la aplicación del algoritmo Hamiltonian Montecarlo a través del lenguaje Stan.
 
@@ -459,7 +459,12 @@ Al tener una sola observación, no se puede obtener una representación fidedign
 
 # Capítulo 4: Crónica de una catástrofe bayesiana
 
+<<<<<<< HEAD
 Luego de volver a su casa Guido se prepara un café y comienza a armar el informe sobre el caso. Utilizando toda la información que recolectó, estimada la hora de muerte de Sergio.  Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Con un semblante de confianza, Guido decide agregar esta observación a su análisis. En menos de lo que canta un gallo, toda su seguridad en sí mismo desaparece inadvertidamente.
+=======
+
+Luego de volver a su casa Guido se prepara un café y comienza a armar el informe sobre el caso. Utilizando toda la información que recolectó, estimada la hora de muerte de Sergio.  Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Con un semblante de confianza, Guido decide agregar esta observación a su análisis. En menos de lo que canta un gallo, toda su seguridad en si mismo desaparece inadvertidamente.
+>>>>>>> 485ab0f394b68e32e4b9dc59023c57f4b478d24d
 
 ## *Posterior* de los parámetros con dos observaciones
 
@@ -718,7 +723,7 @@ Los *posteriors* de ambos modelos se encuentran muy desplazados entre sí, excep
 
 Estos grandes cambios al actualizar el *posterior* con un único dato no se deben pasar por alto, ya que no resultan del todo lógico, por lo que se procede a hacer una validación interna del modelo.
 
-```{r}
+```{r, fig.cap = "Validación interna del modelo con 3 observaciones"}
 predicciones3 <- data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,1]) + 22, x = 6.75)
 predicciones3 <- rbind(data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,2]) + 22, x = 8.25), predicciones3)
 predicciones3 <- rbind(data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,3]) + 22, x = 13.5), predicciones3)
@@ -781,8 +786,6 @@ Según el modelo con 3 observaciones, la distribución de la temperatura del cue
 # Capítulo 5: "D.e.a.t.h." Divagaciones entre aficionados tanteando hipótesis  
 
 "-Quien hubiera pensado que la muerte fuera tan compleja." dice Guido sarcásticamente, castigándose a si mismo por no haber podido contener a su propia desmedida arrogancia de ser motivo de semejante desidia. Sintiéndose tonto por pensar que en su primer trabajo todo iba a salir bien, Guido continua trabajando hasta tarde para poder entregar su informe a tiempo.
-
-
 
 
 Indudablemente, el modelo con 3 observaciones no es uno que se pueda usar para realizar una estimación certera de la hora muerte. Una de las posibles causas es que la última medición de la temperatura de Sergio no es verídica. Al cambiar las condiciones donde el cuerpo reside y además perder el seguimiento hasta su autopsia, las posibilidades de que la última medición sea incorrecta son altas.
