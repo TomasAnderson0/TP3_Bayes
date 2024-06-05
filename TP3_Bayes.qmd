@@ -25,11 +25,11 @@ LICENCIATURA EN ESTADÍSTICA
 \large
 \Huge
 ```
-"Análisis del método Metropolis-Hastings en una y dos dimensiones" \Huge \newline \vspace{0.3cm}
+"Una masacre estadística" \Huge \newline \vspace{0.3cm}
 
 \normalsize
 
-Trabajo Práctico 2 \vspace{1cm}
+Trabajo Práctico 3 \vspace{1cm}
 
 ```{=tex}
 \begin{center}
@@ -41,7 +41,7 @@ Autores: Tomás Anderson - Alejo Vaschetti - Manuel Moresi
 
 Docentes: Ignacio Evangelista - Tomás Capretto
 
-08/05/2024 \normalsize
+05/06/2024 \normalsize
 
 ```{=tex}
 \newpage
@@ -63,25 +63,25 @@ library(rstan)
 library(gridExtra)
 ```
 
-# Prologo: El comienzo de Guido, el fin de Sergio
+# Prólogo: El comienzo de Guido, el fin de Sergio
 
-Era una pacífica madrugada de miércoles en Córdoba, cuando suena un teléfono en la cercanía. Letárgico, luego de dejar sonando unos segundos el celular, Guido abre los ojos desganadamente y comprueba quién es la persona que está irrumpiendo en su sueño. "-¿El capitán?", piensa Guido dudosamente. Al atender el móvil se escucha, "-Llegó la hora de tu primer trabajo Guido. Preparate que en 10 minutos te pasan a buscar para ir a Salsipuedes." Como si todavía no hubiese entendido qué está pasando, lentamente Guido salió de su lecho para vestirse con su preciado nuevo uniforme de la policía científica de Córdoba, recién cuando el vehículo llegó, pudo Guido entender lo que había pasado. "-¡Por fin! Mi primer trabajo.", pensó Guido alegremente. Pero no estaba preparado para afrontar lo que se iba a encontrar.
+Era una pacífica madrugada de miércoles en Córdoba, cuando suena un teléfono en la cercanía. Letárgico, luego de dejar sonando unos segundos el celular, Guido abre los ojos desganadamente y comprueba quién es la persona que está irrumpiendo en su sueño. "-¿El capitán?", piensa Guido dudosamente. Al atender el móvil se escucha, "-Llegó la hora de tu primer trabajo Guido. Preparate que en 10 minutos te pasan a buscar para ir a Salsipuedes." Como si todavía no hubiese entendido qué está pasando, lentamente Guido salió de su lecho para vestirse con su preciado nuevo uniforme de la policía científica de Córdoba. Recién cuando el vehículo llegó, pudo Guido entender lo que había pasado. "-¡Por fin! Mi primer trabajo.", pensó Guido alegremente. Pero, ¿estaba preparado para afrontar lo que se iba a encontrar?
 
 ## Introducción
 
-Se suele decir que la muerte es certera pero... ¿es precisa? Acompaña a Guido, un estudiante de estadística, que como parte de su nuevo trabajo tiene que estimar a qué hora se produjo un asesinato en la ciudad de Salsipuedes con la información que posee.
+Se suele decir que la muerte es certera pero... ¿es precisa? Acompañá a Guido, un estudiante de estadística, que como parte de su nuevo trabajo tiene que estimar a qué hora se produjo un asesinato en la ciudad de Salsipuedes.
 
 # Capítulo 1: Elemental mi querido Guido
 
-Al llegar, Guido presenció el caos de la escena instantáneamente. Muebles volcados y destrozados. Utensilios de cocina desparramados y manchados. La brisa matutina se abría paso por los vidrios estallados y la débil luz de los móviles policiales dejaban ver que el cuerpo de Sergio Contreras yacía en un charco de sangre hacia un extremo del salón. Sorprendentemente, recordando lo que estudió, salió de su estupor y fue a preguntar los hechos del caso.
+Al llegar, Guido presenció el caos de la escena instantáneamente. Muebles volcados y destrozados. Utensilios de cocina desparramados y manchados. La brisa matutina se abría paso por los vidrios estallados y la débil luz de los móviles policiales dejaban ver que el cuerpo de Sergio Contreras yacía en un charco de sangre hacia un extremo del salón. Sorprendentemente, recordando lo que estudió, salió de su estupor y fue a averiguar los hechos del caso.
 
 ## Medicina forense
 
-Uno de los métodos que se utiliza en la medicina forense para poder estimar la hora del fallecimiento, es el estudio de la temperatura corporal. Cuando alguien fallece, la temperatura del cuerpo irá disminuyendo hasta que este llegue a un equilibrio térmico con la temperatura ambiente. Dicho proceso se lo conoce como *enfriamiento postmortem* o *algor mortis*. Pero el ritmo al que el cuerpo pierde calor no es constante. Dicho cambio es una ecuación diferencial que satisface la siguiente ley:
+Uno de los métodos que se utiliza en la medicina forense para poder estimar la hora del fallecimiento, es el estudio de la temperatura corporal. Cuando alguien fallece, la temperatura del cuerpo irá disminuyendo hasta que este llegue a un equilibrio térmico con la temperatura ambiente. Dicho proceso se lo conoce como *enfriamiento postmortem* o *algor mortis*. Pero el ritmo al que el cuerpo pierde calor no es constante. Dicho cambio se puede expresar como una ecuación diferencial que satisface la siguiente ley:
 
 $$\frac{\mathrm{d}T(t)}{\mathrm{d}t} = r [T_{\text{amb}} - T(t)]$$
 
-donde $T_{amb}$ es la temperatura ambiente, $r$ una constante positiva que indica la rapidez del *algor mortis* y $T(t)$ es la función que describe la temperatura del cuerpo en función del tiempo, donde $t=0$ ces el momento de la muerte de la persona.
+donde $T_{amb}$ es la temperatura ambiente, $r$ una constante positiva que indica la rapidez del *algor mortis* y $T(t)$ es la función que describe la temperatura del cuerpo en función del tiempo, donde $t=0$ es el momento de la muerte de la persona.
 
 Una función que satisface la ecuación diferencial es:
 
@@ -120,7 +120,7 @@ ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuou
 
 # Capítulo 2: Luego de la muerte, ¿Qué ocurre?
 
-Luego de que Martina, una policía que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadístico le pregunta "-¿Y a qué hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitás alguna información más Guido?". Sin mirarle a los ojos, Guido saca su celular, observa la hora, busca la temperatura ambiente actual y dice expectante "-No te preocupés doc, ya tengo todo lo que necesito". Pero Guido, ¿Tiene todo lo que necesita?
+Luego de que Martina, una policía que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadístico le pregunta "-¿Y a qué hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitás alguna información más Guido?". Sin mirarle a los ojos, Guido saca su celular, observa la hora, busca la temperatura ambiente actual y dice expectante "-No te preocupés doc, ya tengo todo lo que necesito". Pero Guido, ¿tiene todo lo que necesita?
 
 ## Distribuciones a *priori*
 
@@ -312,7 +312,7 @@ En la figura 7 se observa que entre las 4:30 y las 6:00 es donde el cuerpo tiene
 
 # Capítulo 3: Doctor formulemelo
 
-Después de volver de la estación de servicio, mientras los demás miembros del equipo sacan fotos y recogen pruebas de la escena, nuestro protagonista observa detenidamente el proceso reflexionando sobre el ambiente. -"¿Hoy es un día lúgubre porque ocurrió un asesinato, u ocurrió un asesinato porque es un día lúgubre?" Pero antes de poder continuar con sus meditaciones, observa atentamente cómo el doctor le toma la temperatura al cadáver antes de envolverlo en una bolsa de óbito. -"Esta vez tiene una temperatura de 30.5 ºC." dice el doctor con súbito sosiego. -"Ahora lo transportan a la morgue en Capital para que le hagan la autopsia. ¿Querés los resultados de la autopsia?". "Bueno doc, cuando los tengas mandámelos.". Al tener todos los datos que creía necesario, Guido suspira con anticipo y se dirige al auto para que lo devuelvan a su casa.
+Después de volver de la estación de servicio, mientras los demás miembros del equipo sacan fotos y recogen pruebas de la escena, nuestro protagonista observa detenidamente el proceso reflexionando sobre el ambiente. -"¿Hoy es un día lúgubre porque ocurrió un asesinato, u ocurrió un asesinato porque es un día lúgubre?" Pero antes de poder continuar con sus meditaciones, observa atentamente cómo el doctor le toma la temperatura al cadáver antes de envolverlo en una bolsa de óbito. -"Esta vez tiene una temperatura de 30.5 ºC." dice el doctor con súbito sosiego. -"Ahora lo transportan a la morgue en Capital para que le hagan la autopsia. ¿Querés los resultados?". "Bueno doc, cuando los tengas mandámelos.". Al tener todos los datos que creía necesario, Guido suspira con anticipo y se dirige al auto para que lo devuelvan a su casa.
 
 ## *Posterior* de los parámetros con una observación
 
@@ -320,7 +320,7 @@ Si se utiliza toda la información postulada en el capítulo 2, se puede plantea
 
 $$Y_i|\beta_0, \beta_1, h_m,\sigma \sim Normal(\mu_i,\sigma)$$ Con: $\mu_i = \beta_0 + \beta_1  (h_i-h_m)$
 
-La temperatura del cuerpo a las 6:45 es de 32.8 ºC, es decir, $h_1=6.75$ y $Y_1=ln(32.8-22)=2.55$. Entonces, se obtiene la distribución a posteriori del modelo al incorporar esta información. Esto se logra mediante la aplicación del algoritmo Hamiltonian Montecarlo a través del lenguaje Stan.
+La temperatura del cuerpo a las 6:45 es de 32.8 ºC, es decir, $h_1=6.75$ y $Y_1=ln(32.8-22)=2.55$. Entonces, se obtiene la distribución a *posteriori* del modelo al incorporar esta información. Esto se logra mediante la aplicación del algoritmo Hamiltonian Montecarlo a través del lenguaje Stan.
 
 ```{r, echo = FALSE, fig.cap = "Trazas de las cadenas de cada parámetro para el modelo con una observación"}
 load("posteriors_stan.Rdata")
@@ -347,7 +347,7 @@ $h_m$     & 5.06  & 5.35  & 5.58   & 2636       \\ \hline
 \end{center}
 \end{table}
 ```
-Una vez ajustado el modelo, consecuentemente se obtiene la distribución a posteriori de la hora de muerte de Sergio.
+Una vez ajustado el modelo, consecuentemente se obtiene la distribución a *posteriori* de la hora de muerte de Sergio.
 
 ```{r, echo = FALSE, fig.cap = "Distribución a posteriori de la hora de muerte"}
 posterior1 <- data.frame(extract(modelo1obs, c("b0", "b1", "x" ,"sigma")), observaciones = "1 observación")
@@ -370,7 +370,7 @@ ic_1 = quantile(posterior1$x,c(.025, .5,.975))
 
 ```
 
-Utilizando solo la primera medición de la temperatura del cuerpo, con una probabilidad del 95%, la hora de muerte se encuentra entre las 5:04 y las 5:35, y su mediana es las 5:21.
+Utilizando solo la primera medición de la temperatura del cuerpo, con una probabilidad del 95%, la hora de muerte se encuentra entre las 5:04 y las 5:35, y su mediana se da en las 5:21.
 
 Al incorporar nueva información, se redujo la incertidumbre sobre la hora de muerte de Sergio, pero al usar tan solo una observación, realmente no se puede obtener una mejoría sustancial de la creencia de los parámetros $\beta_0$, $\beta_1$ y $\sigma$, ya que estos necesitan más de una observación para poder ser estimados correctamente, y por lo tanto, reducir la incerteza sobre ellos.
 
@@ -459,12 +459,9 @@ Al tener una sola observación, no se puede obtener una representación fidedign
 
 # Capítulo 4: Crónica de una catástrofe bayesiana
 
-<<<<<<< HEAD
-Luego de volver a su casa Guido se prepara un café y comienza a armar el informe sobre el caso. Utilizando toda la información que recolectó, estimada la hora de muerte de Sergio.  Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Con un semblante de confianza, Guido decide agregar esta observación a su análisis. En menos de lo que canta un gallo, toda su seguridad en sí mismo desaparece inadvertidamente.
-=======
 
-Luego de volver a su casa Guido se prepara un café y comienza a armar el informe sobre el caso. Utilizando toda la información que recolectó, estimada la hora de muerte de Sergio.  Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Con un semblante de confianza, Guido decide agregar esta observación a su análisis. En menos de lo que canta un gallo, toda su seguridad en si mismo desaparece inadvertidamente.
->>>>>>> 485ab0f394b68e32e4b9dc59023c57f4b478d24d
+Luego de volver a su casa Guido se prepara un café y comienza a armar el informe sobre el caso. Utilizando toda la información que recolectó, estima la hora de muerte de Sergio.  Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacerla. Con un semblante de confianza, Guido decide agregar esta observación a su análisis. En menos de lo que canta un gallo, toda su seguridad en sí mismo desaparece inadvertidamente.
+
 
 ## *Posterior* de los parámetros con dos observaciones
 
@@ -547,7 +544,7 @@ En la figura 15 se observa que los *posteriors* de $\beta_1$, $\sigma$ y la hora
 
 Al actualizar el modelo con la segunda observación y realizar la transformación necesaria para volver a la escala original, se obtiene la siguiente predicción de la temperatura de Sergio a través del tiempo.
 
-```{r, echo = FALSE, fig.cap = "Temperatura del cuerpo de Sergio incorporando dos obserciones al modelo"}
+```{r, echo = FALSE, fig.cap = "Temperatura del cuerpo de Sergio incorporando dos observaciones al modelo"}
 predicciones2 <- data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,1]) + 22, x = 6.75)
 predicciones2 <- rbind(data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,2]) + 22, x = 8.25), predicciones2)
 
@@ -645,7 +642,7 @@ Al estar los puntos reales contenidos adentro de la distribución de las réplic
 
 ## *Posterior* de los parámetros con tres observaciones
 
-Teniendo en cuenta la idea de usar toda la información uno podría pensar en utilizar la última temperatura brindada de 23.7 ºC. Primero, se mostrarán los resultados de añadir dicho dato al modelo y luego se explicará por qué, "como Guido predijo", esto no es una sabia decisión.
+Teniendo en cuenta la idea de usar toda la información, se utiliza la última temperatura brindada de 23.7 ºC para actualizar el modelo.
 
 ```{r, echo = FALSE, fig.cap = "Trazas de las cadenas de cada parámetro para el modelo con tres observaciones"}
 modelo3obs %>%
@@ -723,7 +720,7 @@ Los *posteriors* de ambos modelos se encuentran muy desplazados entre sí, excep
 
 Estos grandes cambios al actualizar el *posterior* con un único dato no se deben pasar por alto, ya que no resultan del todo lógico, por lo que se procede a hacer una validación interna del modelo.
 
-```{r, fig.cap = "Validación interna del modelo con 3 observaciones"}
+```{r, echo = FALSE, fig.cap = "Validación interna del modelo con 3 observaciones"}
 predicciones3 <- data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,1]) + 22, x = 6.75)
 predicciones3 <- rbind(data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,2]) + 22, x = 8.25), predicciones3)
 predicciones3 <- rbind(data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,3]) + 22, x = 13.5), predicciones3)
@@ -785,8 +782,9 @@ Según el modelo con 3 observaciones, la distribución de la temperatura del cue
 
 # Capítulo 5: "D.e.a.t.h." Divagaciones entre aficionados tanteando hipótesis  
 
-"-Quien hubiera pensado que la muerte fuera tan compleja." dice Guido sarcásticamente, castigándose a si mismo por no haber podido contener a su propia desmedida arrogancia de ser motivo de semejante desidia. Sintiéndose tonto por pensar que en su primer trabajo todo iba a salir bien, Guido continua trabajando hasta tarde para poder entregar su informe a tiempo.
+"-Quien hubiera pensado que la muerte fuera tan compleja." dice Guido sarcásticamente, castigándose a si mismo por no haber podido contener a su propia desmedida arrogancia de ser motivo de semejante desidia. Sintiéndose tonto por pensar que en su primer trabajo todo iba a salir bien, Guido continúa trabajando hasta tarde para poder entregar su informe a tiempo.
 
+## Falencias del ajuste
 
 Indudablemente, el modelo con 3 observaciones no es uno que se pueda usar para realizar una estimación certera de la hora muerte. Una de las posibles causas es que la última medición de la temperatura de Sergio no es verídica. Al cambiar las condiciones donde el cuerpo reside y además perder el seguimiento hasta su autopsia, las posibilidades de que la última medición sea incorrecta son altas.
 
@@ -796,7 +794,7 @@ Por lo postulado anteriormente, de los tres modelos planteados, el mejor podría
 
 Adicionalmente, todos los modelos propuestos suponen que Sergio se encontraba en un estado saludable al momento de morir. El incumplimiento de dicha suposición puede perjudicar las estimaciones al usar distribuciones a *priori* incorrectas. En este caso, sería correcto aumentar la incertidumbre sobre el $\beta_0$, además de que la construcción de los posibles valores para $\beta_1$, por cómo se estima en este trabajo, cambiaría porque dependen del $\beta_0$.
 
-Entonces, ¿Cuándo murió Sergio?
+Entonces, ¿cuándo murió Sergio?
 
 # Epílogo: ¡Y Guido pudo salir!
 
@@ -805,6 +803,12 @@ Luego de entregar su informe, Guido sintió una sensación ambivalente de satisf
 
 ## Conclusiones
 
+Si se tuviese que elegir algún modelo de los planteados para predecir la hora de muerte de Sergio, se utilizaría el de 2 observaciones. Entonces, la hora estimada se encuentra entre las 4:40 y las 5:29. Pero no se tiene ninguna certeza de que dicho modelo sea correcto. Para poder plantear un mejor modelo que se asemeje a la realidad del descenso de la temperatura de una cuerpo humano a través del tiempo se requiere una profunda indagación en la literatura de dicho efecto fisiológico y físico.
 
 
 
+# Anexo
+
+Lo còdigos para generar este trabajo se encuentran en el siguiente repositorio:
+
+https://github.com/TomasAnderson0/TP3_Bayes
