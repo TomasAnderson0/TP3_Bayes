@@ -130,8 +130,7 @@ ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuou
 ```
 
 
-# Capítulo 2: Además de que está muerto, ¿Qué sabemos?
-
+# Capítulo 2: Además de que está muerto, ¿Qué se sabe?
 Luego de que Martina, una policía que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadístico le pregunta "-¿Y a qué hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitás alguna información más Guido?". Sin mirarle a los ojos, Guido saca su celular, observa la hora, busca la temperatura ambiente actual y dice expectante "-No te preocupés doc, ya tengo todo lo que necesito". Pero Guido, ¿Tiene todo lo que necesita? 
 
 ## Distribuciones a *priori*
@@ -269,11 +268,11 @@ df_sigma = data.frame(y = 2*abs(dnorm(seq_sigma, 0, 0.01)), x = abs(seq_sigma))
 ggplot(df_sigma) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Sigma", breaks = round(seq(0,sigma_max,length.out = 4),3))  + scale_y_continuous(name = "Densidad") +
   theme_bw()
 ```
-Donde dichos valores representan el porcentaje
+Donde dichos valores representan el error de medición en términos del porcentaje de la temperatura medida.
 
-## Descenso de la temperaruta a priori
+## Descenso de la temperaruta a *priori*
 
-Una vez definidas las distribuciones a priori de todos los parametros de los que depende el cambio de temperatura del cuerpo a traves del tiempo, esta se puede graficar para cercionar que lo que uno supone es razonable.
+Una vez definidas las distribuciones a *priori* de todos los parámetros de los que depende el cambio de temperatura del cuerpo a través del tiempo, esta se puede graficar para determinar si lo que uno supone es razonable.
 
 
 ```{r, echo = FALSE, fig.cap = "Distribución a priori de la temperatura del cuerpo de Sergio"}
@@ -295,7 +294,6 @@ mu_mean <- apply(mu_prior_matrix, 2, mean)
 mu_qts <- t(apply(mu_prior_matrix, 2, function(x) quantile(x, c(0.025, 0.975))))
 mu_qts2 <- t(apply(mu_prior_matrix, 2, function(x) quantile(x, c(0.25, 0.75))))
 
-# Finalmente, se lamacenan los valores calculados en un data frame
 data_mu_prior <- data.frame(
   x = grid, 
   y = mu_mean,
@@ -338,20 +336,20 @@ En la figura 8 se obserba que entre las 4:30 y las 6:00 es donde el cuerpo tiene
 
 
 
-# Capitulo 3: tumamamemima
+# Capítulo 3: Ahora que se tiene más información ¿Cómo se utiliza?
 
-Despues de volver de la estación de servicio, mientras los demas miembros del equipo sacan fotos y recogen pruebas de la escena, nuestro protagonista observa detenidamente el proceso reflexionando sobre el ambiente. -"¿Hoy es un día lúgubre porque ocurrió un asesinato, o ocurrió un asesinato porque es un día lúgubre?" Pero antes de poder continuar con su meditaciones, observa atentamente como el doctor le toma la temperatura al cadaver antes de envolverlo en una bolsa de óbito. -"Esta vez tiene una temperatura de 30.5 ºC." dice el doctor con súbito sosiego. -"Ahora lo transportan a la morgue en Capital para que le hagan la autopsia. ¿Queres los resultados de la autopsia?". "Bueno doc, pero no le veo profunda utilidad a dicha información.". Al tener todos los datos que creia necesario, Guido suspira con anticipo y se dirige al auto para que lo devuelvan a su casa.
+Después de volver de la estación de servicio, mientras los demás miembros del equipo sacan fotos y recogen pruebas de la escena, nuestro protagonista observa detenidamente el proceso reflexionando sobre el ambiente. -"¿Hoy es un día lúgubre porque ocurrió un asesinato, u ocurrió un asesinato porque es un día lúgubre?" Pero antes de poder continuar con su meditaciones, observa atentamente cómo el doctor le toma la temperatura al cadaver antes de envolverlo en una bolsa de óbito. -"Esta vez tiene una temperatura de 30.5 ºC." dice el doctor con súbito sosiego. -"Ahora lo transportan a la morgue en Capital para que le hagan la autopsia. ¿Querés los resultados de la autopsia?". "Bueno doc, pero no le veo profunda utilidad a dicha información.". Al tener todos los datos que creia necesario, Guido suspira con anticipo y se dirige al auto para que lo devuelvan a su casa.
 
 
-## *Posterior* de los parametros con una observación
+## *Posterior* de los parámetros con una observación
 
-Si se utiliza toda la información postulada en el capitulo 2, se puede plantear el siguiente modelo con los supuestos detallados en el mismo capitulo.
+Si se utiliza toda la información postulada en el capítulo 2, se puede plantear el siguiente modelo con los supuestos detallados en el mismo capítulo.
 
 $$Y_i|\beta_0, \beta_1, h_m,\sigma \sim Normal(\mu_i,\sigma)$$ 
 Con: $\mu_i = \beta_0 + \beta_1  (h_i-h_m)$
 
 
-La temperatura del cuerpo a las 6:45 es de 32.8 ºC, es decir, $h_1=6.75$ y $Y_1=ln(32.8-22)=2.55$. Entonces, se obtiene la distribución a posteriori del modelo al incorporar esta información. Esto se logra mediante la aplicación del algoritmo Hamiltonian Montecarlo a traves del lenguaje Stan.
+La temperatura del cuerpo a las 6:45 es de 32.8 ºC, es decir, $h_1=6.75$ y $Y_1=ln(32.8-22)=2.55$. Entonces, se obtiene la distribución a posteriori del modelo al incorporar esta información. Esto se logra mediante la aplicación del algoritmo Hamiltonian Montecarlo a través del lenguaje Stan.
 
 ```{r, echo = FALSE, fig.cap = "Trace plots de las cadenas de cada parametro"}
 load("posteriors_stan.Rdata")
@@ -359,7 +357,7 @@ modelo1obs %>%
   setNames(c("Beta 0", "Beta1", "Sigma", "Hora de la muerte", "5", "6", "7", "8"))  %>% 
   traceplot(pars = c("b0", "b1", "sigma", "x")) + labs(colour="Cadenas")
 ```
-Todos los parametros tienen un $\hat{R}$ igual a 1, por lo que las distintas cadenas convergen a la misma distribución.
+Todos los parámetros tienen un $\hat{R}$ igual a 1, por lo que las distintas cadenas convergen a la misma distribución.
 
 
 \begin{table}[]
@@ -372,7 +370,7 @@ $\beta_1$ & -0.27 & -0.23 & -0.22  & 1694       \\ \hline
 $\sigma$  & 0     & 0.01  & 0.02   & 1981       \\ \hline
 $h_m$     & 5.06  & 5.35  & 5.58   & 2636       \\ \hline
 \end{tabular}
-\caption{Estadísticas del $\textit{posterior}$ de cada parametro con una observación}
+\caption{Estadísticas del $\textit{posterior}$ de cada parámetro con una observación}
 \label{table:1}
 \end{center}
 \end{table}
@@ -401,7 +399,7 @@ ic_1 = quantile(posterior1$x,c(.025, .5,.975))
 
 Utilizando solo la primera medición de la temperatura del cuerpo, con una probabilidad del 95%, la hora de muerte se encuentra entre las 5:04 y las 5:35, y su mediana es las 5:21. 
 
-Al incorporar nueva informarción, se redujo la incertidumbre sobre la hora de muerte de Sergio, pero al usar tan solo una observación, realmente no se puede obtener una mejoria sustancial de la creencia de los parametros $\beta_0$, $\beta_1$ y $\sigma$, ya que estos necesitan mas de una observación para poder reducir la incerteza sobre  ellos correctamente.
+Al incorporar nueva informarción, se redujo la incertidumbre sobre la hora de muerte de Sergio, pero al usar tan solo una observación, realmente no se puede obtener una mejoría sustancial de la creencia de los parámetros $\beta_0$, $\beta_1$ y $\sigma$, ya que estos necesitan más de una observación para poder ser estimados correctamente, y por lo tanto, reducir la incerteza sobre ellos.
 
 ```{r, echo = FALSE, fig.cap = "Distribución a posteriori de beta0"}
 grafico_post_b0_1 = data.frame(x = c(as.numeric(posterior1$b0),rnorm(27000,2.69,0.017)), color = rep(c("Posterior", "Prior"), each = 27000))
@@ -488,14 +486,14 @@ ggplot() +
 
 Al tener una sola observación, no se puede obtener una representación fidedigna de la hora de muerte.
 
-# Capitulo 4: No siempre es bueno usar protección
+# Capítulo 4: No siempre es bueno usar protección
 
-Luego de volver a su casa Guido se prepara un cafe y comienza a armar el informe sobre el caso. Utilizando toda la información que recolecto llega a una hora de muerte estimada. Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Al ser de caracter curioso, Guido decide ver que pasaria si agrega esta observación a su análisis. "-Como sospechaba, no es util esto." dice el joven con un aire de confianza. "Supongo que solo queda mandar el informe."
+Luego de volver a su casa Guido se prepara un cafe y comienza a armar el informe sobre el caso. Utilizando toda la información que recolectó llega a una hora de muerte estimada. Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Al ser de carácter curioso, Guido decide ver qué pasaría si agrega esta observación a su análisis. "-Como sospechaba, no es útil esto." dice el joven con un aire de confianza. "Supongo que solo queda mandar el informe."
 
 
-## *Posterior* de los parametros con dos observaciones
+## *Posterior* de los parámetros con dos observaciones
 
-En el capitulo anterior se trabajo con toda la información obtenida hasta el capitulo 2, pero es un sinsentido no utilizar la totalidad de lo que se sabe. Incorporando al modelo la segunda observación de 30.5 ºC de temperatura del cuerpo, se obtienen los siguientes resultados.
+En el capítulo anterior se trabajó con toda la información obtenida hasta el capítulo 2, pero es un sinsentido no utilizar la totalidad de lo que se sabe. Incorporando al modelo la segunda observación de 30.5 ºC de temperatura del cuerpo a las 8:15, se obtienen los siguientes resultados.
 
 
 ```{r, echo = FALSE, fig.cap = "titulo"}
@@ -505,7 +503,7 @@ modelo2obs %>%
 ```
 
 
-Todos los parametros tienen un $\hat{R}$ igual a 1, por lo que las distintas cadenas convergen a la misma distribución.
+Todos los parámetros tienen un $\hat{R}$ igual a 1, por lo que las distintas cadenas convergen a la misma distribución.
 
 
 \begin{table}[]
@@ -518,12 +516,12 @@ $\beta_1$ & -0.22 & -0.19 & -0.16  & 4989       \\ \hline
 $\sigma$  & 0.00    & 0.02  & 0.03   & 5530       \\ \hline
 $h_m$     & 4.67  & 5.09  & 5.49   & 5222       \\ \hline
 \end{tabular}
-\caption{Estadísticas del $\textit{posterior}$ de cada parametro con dos observaciones}
+\caption{Estadísticas del $\textit{posterior}$ de cada parámetro con dos observaciones}
 \label{table:1}
 \end{center}
 \end{table}
 
-Para observar mejor los cambios de los *posteriors* entre el modelo ajustado con una observación y el ajustado con dos, se presentan los siguientes graficos.
+Para observar mejor los cambios de los *posteriors* entre el modelo ajustado con una observación y el ajustado con dos, se presentan los siguientes gráficos.
 
 ```{r, echo = FALSE, fig.cap = "Comp titulu"}
 posterior2 <- data.frame(extract(modelo2obs, c("b0", "b1", "x" ,"sigma")), observaciones = "2 observaciones")
@@ -542,7 +540,7 @@ grid.arrange(plot_post12_1,plot_post12_2,plot_post12_3,plot_post12_4)
 ic_2 = quantile(posterior2$x, c(.025, .5, .975))
 ```
 
-En la figura x se observa que los *posteriors* de $\beta_1$, $\sigma$ y la hora de muerte cambian sustancialmente. La distribución de $\beta_1$ se traslada hacia la derecha, por lo que la velocidad a la que el cuerpo pierde calor es menor. A la distribución de $\sigma$ le ocurre lo mismo, por lo que el error de medición sera mas grande. Y por ultimo, la creencia de la hora de muerte se ve desplazada a la izquiera y se torna mas variable. Entonces, el nuevo intervalo de confianza para ella sera de las 4:40 y las 5:29.
+En la figura x se observa que los *posteriors* de $\beta_1$, $\sigma$ y la hora de muerte cambian sustancialmente. La distribución de $\beta_1$ se traslada hacia la derecha, por lo que la velocidad a la que el cuerpo pierde calor es menor. A la distribución de $\sigma$ le ocurre lo mismo, por lo que el error de medición será más grande. Y por último, la creencia de la hora de muerte se ve desplazada a la izquiera y se torna más variable. Entonces, el nuevo intervalo de confianza para ella será de las 4:40 y las 5:29.
 
 
 
@@ -608,7 +606,7 @@ ggplot() +
 ```
 
 
-Para cercionarse de que el ajuste es correcto, se realiza una validación interna obteniendose de réplicas del conjunto de datos y comparandolas con los datos reales.
+Para garantizar de que el ajuste es correcto, se realiza una validación interna donde se obtienen réplicas de la medición de la temperatura para distintas temperaturas posibles del cuerpo de Sergio en el momento que se obtuvieron los datos reales y comparándolos.
 
 
 ```{r, echo = FALSE, fig.cap = "titulo", warning = FALSE}
@@ -649,16 +647,16 @@ ggplot() +
 Al estar los puntos reales contenidos adentro de la distribución de las réplicas del conjunto de datos, se considera válido el ajuste.
 
 
-## *Posterior* de los parametros con tres observaciones
+## *Posterior* de los parámetros con tres observaciones
 
-Teniendo en cuenta la idea de usar toda la información uno podria pensar en utilizar la ultima temperatura brindada de 23.7 ºC. Primero, se mostraran los resultados de añadir dicho dato al modelo y luego se explicara porque, "como Guido predijo", esto no es una sabia decisión.
-
-
-
-# Capitulo 5: Divagaciones de un 
+Teniendo en cuenta la idea de usar toda la información uno podría pensar en utilizar la última temperatura brindada de 23.7 ºC. Primero, se mostrarán los resultados de añadir dicho dato al modelo y luego se explicará por qué, "como Guido predijo", esto no es una sabia decisión.
 
 
-# Epilogo
+
+# Capítulo 5: Divagaciones de un 
+
+
+# Epílogo
 
 
 
