@@ -63,21 +63,21 @@ library(rstan)
 library(gridExtra)
 ```
 
-## Prologo
+# Prologo: El comienzo de Guido, el fin de Sergio
 
-Era una pacífica madrugada de Miércoles en Córdoba, cuando suena un teléfono en la cercanía. Letárgico, luego de dejar sonando unos segundos el celular, Guido abre los ojos desganadamente y comprueba quién es la persona que está irrumpiendo en su sueño. "-¿El capitán?" piensa Guido dudosamente. Al atender el móvil se escucha, "-Llegó la hora de tu primer trabajo Guido. Preparate que en 10 minutos te pasan a buscar para ir a Salsipuedes." Como si todavía no hubiese entendido qué está pasando, lentamente Guido salió de su lecho para vestirse con su preciado nuevo uniforme de la policía científica de Córdoba, recién cuando el vehículo llegó, pudo Guido entender lo que había pasado. "-¡Por fin! Mi primer trabajo." pensó Guido alegremente. Pero no estaba preparado para afrontar lo que se iba a encontrar.
+Era una pacífica madrugada de miércoles en Córdoba, cuando suena un teléfono en la cercanía. Letárgico, luego de dejar sonando unos segundos el celular, Guido abre los ojos desganadamente y comprueba quién es la persona que está irrumpiendo en su sueño. "-¿El capitán?", piensa Guido dudosamente. Al atender el móvil se escucha, "-Llegó la hora de tu primer trabajo Guido. Preparate que en 10 minutos te pasan a buscar para ir a Salsipuedes." Como si todavía no hubiese entendido qué está pasando, lentamente Guido salió de su lecho para vestirse con su preciado nuevo uniforme de la policía científica de Córdoba, recién cuando el vehículo llegó, pudo Guido entender lo que había pasado. "-¡Por fin! Mi primer trabajo.", pensó Guido alegremente. Pero no estaba preparado para afrontar lo que se iba a encontrar.
 
 ## Introducción
 
 Se suele decir que la muerte es certera pero... ¿es precisa? Acompaña a Guido, un estudiante de estadística, que como parte de su nuevo trabajo tiene que estimar a qué hora se produjo un asesinato en la ciudad de Salsipuedes con la información que posee.
 
-# Capítulo 1: Luego de la muerte, ¿Qué ocurre?
+# Capítulo 1: Elemental mi querido Guido
 
 Al llegar, Guido presenció el caos de la escena instantáneamente. Muebles volcados y destrozados. Utensilios de cocina desparramados y manchados. La brisa matutina se abría paso por los vidrios estallados y la débil luz de los móviles policiales dejaban ver que el cuerpo de Sergio Contreras yacía en un charco de sangre hacia un extremo del salón. Sorprendentemente, recordando lo que estudió, salió de su estupor y fue a preguntar los hechos del caso.
 
 ## Medicina forense
 
-Uno de los métodos que se utiliza en la medicina forense para poder estimar la hora del fallecimiento, es el estudio de la temperatura corporal. Cuando alguien fallece, la temperatura del cuerpo irá disminuyendo hasta que este llege a un equilibrio térmico con la temperatura ambiente. Dicho proceso se lo conoce como *enfriamiento postmortem* o *algor mortis*. Pero el ritmo al que el cuerpo pierde calor no es constante. Dicho cambio se puede expresar como una ecuación diferencial que satisface la siguiente ley:
+Uno de los métodos que se utiliza en la medicina forense para poder estimar la hora del fallecimiento, es el estudio de la temperatura corporal. Cuando alguien fallece, la temperatura del cuerpo irá disminuyendo hasta que este llegue a un equilibrio térmico con la temperatura ambiente. Dicho proceso se lo conoce como *enfriamiento postmortem* o *algor mortis*. Pero el ritmo al que el cuerpo pierde calor no es constante. Dicho cambio es una ecuación diferencial que satisface la siguiente ley:
 
 $$\frac{\mathrm{d}T(t)}{\mathrm{d}t} = r [T_{\text{amb}} - T(t)]$$
 
@@ -99,7 +99,7 @@ ggplot(datos_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuous(n
   theme_bw()
 ```
 
-Para simplificar el problema, no se utiliza la función $T(t)$ sino $ln(T(t)-T_{amb})$ ya que esta tiene forma lineal. $$
+Para simplificar el problema, no se utiliza la función $T(t)$ sino $ln(T(t)-T_{amb})$, ya que esta tiene forma lineal. $$
 \begin{array}{lrrr}
  T(t)-T_{amb} = T_{diff}e^{-rt} & Donde: & T_{diff} = T_i-T_{amb}
 \end{array}
@@ -107,7 +107,7 @@ $$
 
 $$Y(t)=ln(T(t)-T_{amb}) = ln(T_{diff}e^{-rt}) = ln(T_{diff})+ln(e^{-rt}) = ln(T_{diff})-rt$$
 
-Dicha función esta representada por la ecuacción de una recta $y=\beta_0+\beta_1*x$, donde $\beta_0$ es el logaritmo natural de la diferencia de temperatura del cuerpo inicial y de la ambiente. $\beta_1$ representa la velocidad de cambio de $Y(t)$.
+Dicha función está representada por la ecuación de una recta $y=\beta_0+\beta_1*x$, donde $\beta_0$ es el logaritmo natural de la diferencia de temperatura del cuerpo inicial y de la ambiente. $\beta_1$ representa la velocidad de cambio de $Y(t)$.
 
 ```{r, echo = FALSE, fig.cap = "Transformación de la temperatura de un cuerpo según el tiempo desde la muerte"}
 ln_T_valores_1 = log(T_valores_1-23)
@@ -118,7 +118,7 @@ ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuou
   theme_bw()
 ```
 
-# Capítulo 2: Además de que está muerto, ¿Qué se sabe?
+# Capítulo 2: Luego de la muerte, ¿Qué ocurre?
 
 Luego de que Martina, una policía que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadístico le pregunta "-¿Y a qué hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitás alguna información más Guido?". Sin mirarle a los ojos, Guido saca su celular, observa la hora, busca la temperatura ambiente actual y dice expectante "-No te preocupés doc, ya tengo todo lo que necesito". Pero Guido, ¿Tiene todo lo que necesita?
 
@@ -145,7 +145,7 @@ $$Y_i = ln(T(t_i)-T_{amb})$$ $$\beta_0 = ln(T_{ini}-T_{amb}) = ln(T_{diff})$$ $$
 
 Y $t_i$ es el i-ésimo tiempo en horas que pasó desde que Sergio murió.
 
-Se conoce la temperatura ambiente, siendo $T_{amb}=22$ ºC. Los valores exactos de los demás parámetros se desconocen pero se tiene cierta información sobre ellos.
+Se conoce la temperatura ambiente, siendo $T_{amb}=22$ ºC. Los valores exactos de los demás parámetros se desconocen, pero se tiene cierta información sobre ellos.
 
 ## $\boldsymbol{\beta_0}$: Logaritmo natural de la diferencia entre la temperatura inicial del cuerpo y la ambiente
 
@@ -172,7 +172,7 @@ ggplot(df_beta0) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Bet
 
 La velocidad a la que decrece la temperatura de los cuerpos humanos cuando mueren es un tema ya estudiado en la medicina forense.
 
-"Greggio y Valtorta(1998) han demostrado que el descenso de la temperatura corporal post-mortem se realiza mediante un *plateau* inicial de una 3-4 horas de duración, con una caída promedio de 0.5 ºC por hora, un decrecimiento lineal que sobrepasa las 12 hs de la muerte con un pérdida promedio de 1 ºC cada hora y luego un *plateau* final, con descenso lento, de 0,5º o 0,25º por hora hasta igualar a la temperatura ambiente." Fraraccio, J(2021). *Medicina forense contemporanea*. Dosyuna ediciones argentinas.
+"Greggio y Valtorta(1998) han demostrado que el descenso de la temperatura corporal post-mortem se realiza mediante un *plateau* inicial de una 3-4 horas de duración, con una caída promedio de 0.5 ºC por hora, un decrecimiento lineal que sobrepasa las 12 hs de la muerte con una pérdida promedio de 1 ºC cada hora y luego un *plateau* final, con descenso lento, de 0,5º o 0,25º por hora hasta igualar a la temperatura ambiente." Fraraccio, J(2021). *Medicina forense contemporanea*. Dosyuna ediciones argentinas.
 
 ```{r, echo = FALSE}
 r_seq = seq(0.1,0.4,.001)
@@ -195,7 +195,7 @@ r_mu = -(r_ls+r_li)/2
 r_sigma = (r_ls-r_li)/6
 ```
 
-Basandose en este extracto, se tarda aproximadamente 22 horas en que un cuerpo llege a una temperatura abiente de 22 ºC, por lo que se calcula el valor de $T(t)$ en $t=22$ para varios valores de $\beta_1=-r$ y temperaturas iniciales del cuerpo. Los $\beta_1$ que se acercan a 22 ºC a las 22 horas estan entre `r r_li` y `r r_ls`.
+Basándose en este extracto, se tarda aproximadamente 22 horas en que un cuerpo llegue a una temperatura ambiente de 22 ºC, por lo que se calcula el valor de $T(t)$ en $t=22$ para varios valores de $\beta_1=-r$ y temperaturas iniciales del cuerpo. Los $\beta_1$ que se acercan a 22 ºC a las 22 horas están entre `r r_li` y `r r_ls`.
 
 Entonces se llega a que:
 
@@ -247,7 +247,7 @@ ggplot(df_sigma) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Sig
 
 Donde dichos valores representan el error de medición en términos del porcentaje de la temperatura medida.
 
-## Descenso de la temperaruta a *priori*
+## Descenso de la temperatura a *priori*
 
 Una vez definidas las distribuciones a *priori* de todos los parámetros de los que depende el cambio de temperatura del cuerpo a través del tiempo, esta se puede graficar para determinar si lo que uno supone es razonable.
 
@@ -308,11 +308,11 @@ ggplot(data_mu_prior) +
 
 ```
 
-En la figura 7 se observa que entre las 4:30 y las 6:00 es donde el cuerpo tiene una temperatura normal para una persona viva, es decir, se esta prediciendo a la hora de muerte en ese rango horario.
+En la figura 7 se observa que entre las 4:30 y las 6:00 es donde el cuerpo tiene una temperatura normal para una persona viva, es decir, se está prediciendo a la hora de muerte en ese rango horario.
 
-# Capítulo 3: Ahora que se tiene más información ¿Cómo se utiliza?
+# Capítulo 3: Doctor formulemelo
 
-Después de volver de la estación de servicio, mientras los demás miembros del equipo sacan fotos y recogen pruebas de la escena, nuestro protagonista observa detenidamente el proceso reflexionando sobre el ambiente. -"¿Hoy es un día lúgubre porque ocurrió un asesinato, u ocurrió un asesinato porque es un día lúgubre?" Pero antes de poder continuar con su meditaciones, observa atentamente cómo el doctor le toma la temperatura al cadaver antes de envolverlo en una bolsa de óbito. -"Esta vez tiene una temperatura de 30.5 ºC." dice el doctor con súbito sosiego. -"Ahora lo transportan a la morgue en Capital para que le hagan la autopsia. ¿Querés los resultados de la autopsia?". "Bueno doc, pero no le veo profunda utilidad a dicha información.". Al tener todos los datos que creia necesario, Guido suspira con anticipo y se dirige al auto para que lo devuelvan a su casa.
+Después de volver de la estación de servicio, mientras los demás miembros del equipo sacan fotos y recogen pruebas de la escena, nuestro protagonista observa detenidamente el proceso reflexionando sobre el ambiente. -"¿Hoy es un día lúgubre porque ocurrió un asesinato, u ocurrió un asesinato porque es un día lúgubre?" Pero antes de poder continuar con sus meditaciones, observa atentamente cómo el doctor le toma la temperatura al cadáver antes de envolverlo en una bolsa de óbito. -"Esta vez tiene una temperatura de 30.5 ºC." dice el doctor con súbito sosiego. -"Ahora lo transportan a la morgue en Capital para que le hagan la autopsia. ¿Querés los resultados de la autopsia?". "Bueno doc, cuando los tengas mandámelos.". Al tener todos los datos que creía necesario, Guido suspira con anticipo y se dirige al auto para que lo devuelvan a su casa.
 
 ## *Posterior* de los parámetros con una observación
 
@@ -372,7 +372,7 @@ ic_1 = quantile(posterior1$x,c(.025, .5,.975))
 
 Utilizando solo la primera medición de la temperatura del cuerpo, con una probabilidad del 95%, la hora de muerte se encuentra entre las 5:04 y las 5:35, y su mediana es las 5:21.
 
-Al incorporar nueva informarción, se redujo la incertidumbre sobre la hora de muerte de Sergio, pero al usar tan solo una observación, realmente no se puede obtener una mejoría sustancial de la creencia de los parámetros $\beta_0$, $\beta_1$ y $\sigma$, ya que estos necesitan más de una observación para poder ser estimados correctamente, y por lo tanto, reducir la incerteza sobre ellos.
+Al incorporar nueva información, se redujo la incertidumbre sobre la hora de muerte de Sergio, pero al usar tan solo una observación, realmente no se puede obtener una mejoría sustancial de la creencia de los parámetros $\beta_0$, $\beta_1$ y $\sigma$, ya que estos necesitan más de una observación para poder ser estimados correctamente, y por lo tanto, reducir la incerteza sobre ellos.
 
 ```{r, echo = FALSE, fig.cap = "Distribución a posteriori de beta0"}
 grafico_post_b0_1 = data.frame(x = c(as.numeric(posterior1$b0),rnorm(27000,2.69,0.017)), color = rep(c("Posterior", "Prior"), each = 27000))
@@ -401,7 +401,7 @@ ggplot(grafico_post_sigma_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5
 
 ```
 
-Al actualizar el modelo con una observación y realizar la transformación necesaria para volver a la escala original, se obtiene la siguiente predicción de la temperatura de Sergio a traves del tiempo.
+Al actualizar el modelo con una observación y realizar la transformación necesaria para volver a la escala original, se obtiene la siguiente predicción de la temperatura de Sergio a través del tiempo.
 
 ```{r, echo = FALSE, fig.cap = "Temperatura del cuerpo de Sergio incorporando una observación al modelo"}
 predicciones1 <- data.frame(y = exp(extract(modelo1obs, "log_dif_temp")$log_dif_temp) + 22, x = 6.75)
@@ -457,9 +457,9 @@ ggplot() +
 
 Al tener una sola observación, no se puede obtener una representación fidedigna de la hora de muerte.
 
-# Capítulo 4: 
+# Capítulo 4: Crónica de una catástrofe bayesiana
 
-Luego de volver a su casa Guido se prepara un café y comienza a armar el informe sobre el caso. Utilizando toda la información que recolectó, estimada la hora de muerte de Sergio.  Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Con un semblante de confianza, Guido decide agregar esta observación a su análisis. En menos de lo que canta un gallo, toda su seguridad en si mismo desaparece inadvertidamente.
+Luego de volver a su casa Guido se prepara un café y comienza a armar el informe sobre el caso. Utilizando toda la información que recolectó, estimada la hora de muerte de Sergio.  Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Con un semblante de confianza, Guido decide agregar esta observación a su análisis. En menos de lo que canta un gallo, toda su seguridad en sí mismo desaparece inadvertidamente.
 
 ## *Posterior* de los parámetros con dos observaciones
 
@@ -540,7 +540,7 @@ ic_2 = quantile(posterior2$x, c(.025, .5, .975))
 
 En la figura 15 se observa que los *posteriors* de $\beta_1$, $\sigma$ y la hora de muerte cambian sustancialmente. La distribución de $\beta_1$ se traslada hacia la derecha, por lo que la velocidad a la que el cuerpo pierde calor es menor. A la distribución de $\sigma$ le ocurre lo mismo, por lo que el error de medición será más grande. Y por último, la creencia de la hora de muerte se ve desplazada a la izquierda y se torna más variable, por lo tanto, el nuevo intervalo de confianza para ella será de las 4:40 y las 5:29.
 
-Al actualizar el modelo con la segunda observación y realizar la transformación necesaria para volver a la escala original, se obtiene la siguiente predicción de la temperatura de Sergio a traves del tiempo.
+Al actualizar el modelo con la segunda observación y realizar la transformación necesaria para volver a la escala original, se obtiene la siguiente predicción de la temperatura de Sergio a través del tiempo.
 
 ```{r, echo = FALSE, fig.cap = "Temperatura del cuerpo de Sergio incorporando dos obserciones al modelo"}
 predicciones2 <- data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,1]) + 22, x = 6.75)
@@ -780,7 +780,7 @@ Según el modelo con 3 observaciones, la distribución de la temperatura del cue
 
 # Capítulo 5: "D.e.a.t.h." Divagaciones entre aficionados tanteando hipótesis  
 
-"-Quien hubiera pensado que la muerte fuera tan compleja." dice Guido sarcasticamente, castigandose a si mismo por no haber podido contener a su propia desmedida arrogancia de ser motivo de semejante desidia. Sintiendose tonto por pensar que en su primer trabajo todo iba a salir bien, Guido continua trabajando hasta tarde para poder entregar su informe a tiempo.
+"-Quien hubiera pensado que la muerte fuera tan compleja." dice Guido sarcásticamente, castigándose a si mismo por no haber podido contener a su propia desmedida arrogancia de ser motivo de semejante desidia. Sintiéndose tonto por pensar que en su primer trabajo todo iba a salir bien, Guido continua trabajando hasta tarde para poder entregar su informe a tiempo.
 
 
 
@@ -795,7 +795,13 @@ Adicionalmente, todos los modelos propuestos suponen que Sergio se encontraba en
 
 Entonces, ¿Cuándo murió Sergio?
 
-# Epílogo: 
+# Epílogo: ¡Y Guido pudo salir!
 
-Luego de entregar su informe, Guido sintio una sensación ambivalente de satisfacción y disconformidad "-Al menos ya todo termino." dice el fatigado estudiante y sin ningun tipo de reparo en su vestimenta, se desploma en su lecho para poder tener una ganadas horas de sueño.
+Luego de entregar su informe, Guido sintió una sensación ambivalente de satisfacción y disconformidad "-Al menos ya todo terminó." dice el fatigado estudiante y sin ningún tipo de reparo en su vestimenta, se desploma en su lecho para poder tener una ganadas horas de sueño.
+
+
+## Conclusiones
+
+
+
 
