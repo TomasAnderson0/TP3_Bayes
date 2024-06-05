@@ -173,15 +173,15 @@ ggplot(posterior12) + aes(x = x, fill = observaciones) + geom_density(alpha = 0.
 predicciones2 <- data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,1]) + 22, x = 6.75)
 predicciones2 <- rbind(data.frame(y = exp(extract(modelo2obs, "log_dif_temp")$log_dif_temp[,2]) + 22, x = 8.25), predicciones2)
 
-x_grid2 <- seq(4, 14, length.out = 100)
-mu_matrix2 <- matrix(nrow = 27000, ncol = 100)
+x_grid2 <- seq(4, 24, length.out = 200)
+mu_matrix2 <- matrix(nrow = 27000, ncol = 200)
 
 for (i in seq_along(x_grid2)) {
   mu_matrix2[, i] <- exp(posterior2$b0 + posterior2$b1 * (x_grid2[i] - posterior2$x)) + 22
 }
 
 mu_mean2 <- apply(mu_matrix2, 2, mean)
-mu_qts22 <- t(apply(mu_matrix2, 2, function(x) quantile(x, c(0.025, 0.975))))
+mu_qts2 <- t(apply(mu_matrix2, 2, function(x) quantile(x, c(0.025, 0.975))))
 mu_qts22 <- t(apply(mu_matrix2, 2, function(x) quantile(x, c(0.25, 0.75))))
 
 data_mu2 <- data.frame(
@@ -213,7 +213,41 @@ ggplot() +
   ) +
   stat_summary(data = predicciones2, fun.data = mean_sdl,
                mapping = aes(x = x, y = y), color = "blue", size = 0.5) +
-  scale_y_continuous(name = "Temperatura (°C)", breaks = c(42.5, 40, 37.5, 36, 35, 32.5, 30, 27.5, 25, 22)) +
+  scale_y_continuous(breaks = seq(22, 44, 2),
+                     name = "Temperatura (ºC)") + 
+  scale_x_continuous(limits = c(4, 24), breaks = seq(4, 24, 2), 
+                     labels = c("4:00", "6:00", "8:00", "10:00",
+                                "12:00", "14:00", "16:00","18:00",
+                                "20:00", "22:00", "00:00"), 
+                     name = "Hora") +
+  geom_point(aes(x = c(6.75, 8.25), y = c(32.8, 30.5)),
+             shape = 13, size = 2, color = "red") +
+  theme_bw()
+
+ggplot() + 
+  geom_ribbon(
+    aes(x, ymin = lower_95, ymax = upper_95),
+    fill = "grey50",
+    alpha = 0.6,
+    data = data_mu2
+  ) +
+  geom_ribbon(
+    aes(x, ymin = lower_50, ymax = upper_50),
+    fill = "grey35",
+    alpha = 0.6,
+    data = data_mu2
+  ) +
+  geom_line(
+    aes(x, y), 
+    color = "firebrick",
+    data = data_mu2
+  ) +
+  stat_summary(data = predicciones2, fun.data = mean_sdl,
+               mapping = aes(x = x, y = y), color = "blue", size = 0.5) +
+  scale_y_continuous(name = "Temperatura (°C)",
+                     breaks = c(42.5, 40, 37.5, 36, 35,
+                                32.5, 30, 27.5, 25, 22),
+                     limits = c(27, 36)) +
   scale_x_continuous(limits = c(6, 9), breaks = seq(6, 9, 0.5), 
                      labels = c("6:00", "6:30", "7:00", "7:30",
                                 "8:00", "8:30", "9:00"), 
