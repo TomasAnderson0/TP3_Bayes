@@ -7,70 +7,72 @@ header-includes:
   - \usepackage{hyperref}
 ---
 
-
 \Centering
 
 \vspace{3cm}
-
 
 \pagenumbering{gobble}
 
 \vspace{5cm}
 
 \large
+
 LICENCIATURA EN ESTADÍSTICA
 
 \vspace{1cm}
 
+```{=tex}
 \large
 \Huge
-"Análisis del método Metropolis-Hastings en una y dos dimensiones"
-\Huge
-\newline
-\vspace{0.3cm}
+```
+"Análisis del método Metropolis-Hastings en una y dos dimensiones" \Huge \newline \vspace{0.3cm}
 
 \normalsize
-Trabajo Práctico 2
-\vspace{1cm}
+
+Trabajo Práctico 2 \vspace{1cm}
+
+```{=tex}
 \begin{center}
 
 \end{center}
 \vspace{2cm}
+```
 Autores: Tomás Anderson - Alejo Vaschetti - Manuel Moresi
 
 Docentes: Ignacio Evangelista - Tomás Capretto
 
-08/05/2024
-\normalsize
+08/05/2024 \normalsize
 
+```{=tex}
 \newpage
 \hypersetup{linkcolor = black}
 \tableofcontents
-
-
+```
+```{=tex}
 \newpage
 \pagenumbering{arabic}
-
+```
+```{=tex}
 \RaggedRight
 \newpage
+```
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 library(tidyverse)
 library(ggplot2)
 library(rstan)
 library(gridExtra)
 ```
+
 ## Prologo
 
 Era una pacífica madrugada de Miércoles en Córdoba, cuando suena un teléfono en la cercanía. Letárgico, luego de dejar sonando unos segundos el celular, Guido abre los ojos desganadamente y comprueba quién es la persona que está irrumpiendo en su sueño. "-¿El capitán?" piensa Guido dudosamente. Al atender el móvil se escucha, "-Llegó la hora de tu primer trabajo Guido. Preparate que en 10 minutos te pasan a buscar para ir a Salsipuedes." Como si todavía no hubiese entendido qué está pasando, lentamente Guido salió de su lecho para vestirse con su preciado nuevo uniforme de la policía científica de Córdoba, recién cuando el vehículo llegó, pudo Guido entender lo que había pasado. "-¡Por fin! Mi primer trabajo." pensó Guido alegremente. Pero no estaba preparado para afrontar lo que se iba a encontrar.
-
 
 ## Introducción
 
 Se suele decir que la muerte es certera pero... ¿es precisa? Acompaña a Guido, un estudiante de estadística, que como parte de su nuevo trabajo tiene que estimar a qué hora se produjo un asesinato en la ciudad de Salsipuedes con la información que posee.
 
-
 # Capítulo 1: Luego de la muerte, ¿Qué ocurre?
-  
+
 Al llegar, Guido presenció el caos de la escena instantáneamente. Muebles volcados y destrozados. Utensilios de cocina desparramados y manchados. La brisa matutina se abría paso por los vidrios estallados y la débil luz de los móviles policiales dejaban ver que el cuerpo de Sergio Contreras yacía en un charco de sangre hacia un extremo del salón. Sorprendentemente, recordando lo que estudió, salió de su estupor y fue a preguntar los hechos del caso.
 
 ## Medicina forense
@@ -81,19 +83,11 @@ $$\frac{\mathrm{d}T(t)}{\mathrm{d}t} = r [T_{\text{amb}} - T(t)]$$
 
 donde $T_{amb}$ es la temperatura ambiente, $r$ una constante positiva que indica la rapidez del *algor mortis* y $T(t)$ es la función que describe la temperatura del cuerpo en función del tiempo, donde $t=0$ ces el momento de la muerte de la persona.
 
-Una función que satisface la ecuación diferencial es: 
+Una función que satisface la ecuación diferencial es:
 
-$$T(t) = T_{amb}+(T_i-T_{amb})e^{-rt}$$ 
-Donde $T_i$ es la temperatura inicial del cuerpo. Dicha relación se demuestra de la siguiente manera:
-$$\frac{dT(t)}{dt} =-r(T_i-T_{amb})e^{-rt}$$
-$$\frac{dT(t)}{dt} =-r(T_i-T_{amb})e^{-rt}+rT_{amb}-rT_{amb}$$ 
-$$\frac{dT(t)}{dt} =-r(T_{amb}+(T_i-T_{amb})e^{-rt})+rT_{amb}$$ 
-$$\frac{dT(t)}{dt} =-rT(t)+rT_{amb}$$ 
-$$\frac{dT(t)}{dt} =r(T_{amb}-T(t))$$
-
+$$T(t) = T_{amb}+(T_i-T_{amb})e^{-rt}$$ Donde $T_i$ es la temperatura inicial del cuerpo. Dicha relación se demuestra de la siguiente manera: $$\frac{dT(t)}{dt} =-r(T_i-T_{amb})e^{-rt}$$ $$\frac{dT(t)}{dt} =-r(T_i-T_{amb})e^{-rt}+rT_{amb}-rT_{amb}$$ $$\frac{dT(t)}{dt} =-r(T_{amb}+(T_i-T_{amb})e^{-rt})+rT_{amb}$$ $$\frac{dT(t)}{dt} =-rT(t)+rT_{amb}$$ $$\frac{dT(t)}{dt} =r(T_{amb}-T(t))$$
 
 Si $T_{amb}=23$ y $T_{ini}=37$ la forma de la función es la siguiente:
-
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.cap = "Temperatura de un cuerpo según el tiempo desde la muerte"}
 T_fun = function(t_amb, t_i, r, t) t_amb + (t_i - t_amb) * exp(-r * t) 
@@ -103,22 +97,17 @@ datos_T = data.frame(x = seq(0,75,1), y = c(T_valores_1, T_valores_2), r = rep(c
 
 ggplot(datos_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuous(name = "T(t)") + scale_x_continuous(name = "t") +
   theme_bw()
-``` 
+```
 
-  
-Para simplificar el problema, no se utiliza la función $T(t)$ sino $ln(T(t)-T_{amb})$ ya que esta tiene forma lineal.
-$$
+Para simplificar el problema, no se utiliza la función $T(t)$ sino $ln(T(t)-T_{amb})$ ya que esta tiene forma lineal. $$
 \begin{array}{lrrr}
  T(t)-T_{amb} = T_{diff}e^{-rt} & Donde: & T_{diff} = T_i-T_{amb}
 \end{array}
 $$
 
-
 $$Y(t)=ln(T(t)-T_{amb}) = ln(T_{diff}e^{-rt}) = ln(T_{diff})+ln(e^{-rt}) = ln(T_{diff})-rt$$
 
-Dicha función esta representada por la ecuacción de una recta $y=\beta_0+\beta_1*x$,
-donde $\beta_0$ es el logaritmo natural de la diferencia de temperatura del cuerpo inicial y de la ambiente. $\beta_1$ representa la velocidad de cambio de $Y(t)$.
-
+Dicha función esta representada por la ecuacción de una recta $y=\beta_0+\beta_1*x$, donde $\beta_0$ es el logaritmo natural de la diferencia de temperatura del cuerpo inicial y de la ambiente. $\beta_1$ representa la velocidad de cambio de $Y(t)$.
 
 ```{r, echo = FALSE, fig.cap = "Transformación de la temperatura de un cuerpo según el tiempo desde la muerte"}
 ln_T_valores_1 = log(T_valores_1-23)
@@ -129,9 +118,9 @@ ggplot(datos_ln_T) + geom_line(aes(x = x, y = y, color = r)) + scale_y_continuou
   theme_bw()
 ```
 
-
 # Capítulo 2: Además de que está muerto, ¿Qué se sabe?
-Luego de que Martina, una policía que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadístico le pregunta "-¿Y a qué hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitás alguna información más Guido?". Sin mirarle a los ojos, Guido saca su celular, observa la hora, busca la temperatura ambiente actual y dice expectante "-No te preocupés doc, ya tengo todo lo que necesito". Pero Guido, ¿Tiene todo lo que necesita? 
+
+Luego de que Martina, una policía que estaba en la escena del crimen, le informe a Guido que a las 5:33 am recibieron una llamada de una vecina sobre ruidos extraños, el joven estadístico le pregunta "-¿Y a qué hora llegaron?". "-Llegamos a las 5:52 y en 8 minutos concluimos la inspección de la casa. En este mismo estado la encontramos.". Sin poder continuar la conversación, el médico del equipo llama a Guido y le cuenta que la temperatura del cuerpo de Sergio es de 32.8 ºC. "-¿Necesitás alguna información más Guido?". Sin mirarle a los ojos, Guido saca su celular, observa la hora, busca la temperatura ambiente actual y dice expectante "-No te preocupés doc, ya tengo todo lo que necesito". Pero Guido, ¿Tiene todo lo que necesita?
 
 ## Distribuciones a *priori*
 
@@ -148,19 +137,15 @@ Pero se quiere que el modelo pueda expresarse en función de una recta, por lo q
 
 Esto se explicita en el siguiente modelo:
 
-$$Y_i|\mu_i,\sigma \sim Normal(\mu_i,\sigma)$$
-$$\mu_i = \beta_0 + \beta_1  t_i$$
+$$Y_i|\mu_i,\sigma \sim Normal(\mu_i,\sigma)$$ $$\mu_i = \beta_0 + \beta_1  t_i$$
 
 Donde:
 
-$$Y_i = ln(T(t_i)-T_{amb})$$
-$$\beta_0 = ln(T_{ini}-T_{amb}) = ln(T_{diff})$$
-$$\beta_1 = -r$$
+$$Y_i = ln(T(t_i)-T_{amb})$$ $$\beta_0 = ln(T_{ini}-T_{amb}) = ln(T_{diff})$$ $$\beta_1 = -r$$
 
 Y $t_i$ es el i-ésimo tiempo en horas que pasó desde que Sergio murió.
 
 Se conoce la temperatura ambiente, siendo $T_{amb}=22$ ºC. Los valores exactos de los demás parámetros se desconocen pero se tiene cierta información sobre ellos.
-
 
 ## $\boldsymbol{\beta_0}$: Logaritmo natural de la diferencia entre la temperatura inicial del cuerpo y la ambiente
 
@@ -183,13 +168,11 @@ ggplot(df_beta0) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Bet
 # ggplot(norm_t)+ geom_density(aes(x = x, y = after_stat(density)), color = "red", linewidth = 1)
 ```
 
-
 ## $\boldsymbol{\beta_1}$: Velocidad en la que la temperatura del cuerpo cae
 
-La velocidad a la que decrece la temperatura de los cuerpos humanos cuando mueren es un tema ya estudiado en la medicina forense. 
+La velocidad a la que decrece la temperatura de los cuerpos humanos cuando mueren es un tema ya estudiado en la medicina forense.
 
 "Greggio y Valtorta(1998) han demostrado que el descenso de la temperatura corporal post-mortem se realiza mediante un *plateau* inicial de una 3-4 horas de duración, con una caída promedio de 0.5 ºC por hora, un decrecimiento lineal que sobrepasa las 12 hs de la muerte con un pérdida promedio de 1 ºC cada hora y luego un *plateau* final, con descenso lento, de 0,5º o 0,25º por hora hasta igualar a la temperatura ambiente." Fraraccio, J(2021). *Medicina forense contemporanea*. Dosyuna ediciones argentinas.
-
 
 ```{r, echo = FALSE}
 r_seq = seq(0.1,0.4,.001)
@@ -212,18 +195,17 @@ r_mu = -(r_ls+r_li)/2
 r_sigma = (r_ls-r_li)/6
 ```
 
-
 Basandose en este extracto, se tarda aproximadamente 22 horas en que un cuerpo llege a una temperatura abiente de 22 ºC, por lo que se calcula el valor de $T(t)$ en $t=22$ para varios valores de $\beta_1=-r$ y temperaturas iniciales del cuerpo. Los $\beta_1$ que se acercan a 22 ºC a las 22 horas estan entre `r r_li` y `r r_ls`.
 
-Entonces se llega a que: 
+Entonces se llega a que:
 
 $$\beta_1 \sim Normal(-0.248,0.018)$$
+
 ```{r, echo = FALSE, fig.cap = "Distribución a priori de beta 1"}
 seq_beta1 = seq(-0.19,-0.31,length.out = 1000)
 df_beta1 = data.frame(y = dnorm(seq_beta1, r_mu, r_sigma), x = seq_beta1)
 ggplot(df_beta1) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Beta1", breaks = round(seq(r_mu-3*r_sigma,r_mu+3*r_sigma,length.out = 7),3))  + scale_y_continuous(name = "Densidad") + theme_bw()
 ```
-
 
 ## $\boldsymbol{h_m}$: Horario de la muerte
 
@@ -233,8 +215,8 @@ Donde $h_m$ es la hora en que se murió Sergio y $h_i$ es la hora de la i-ésima
 
 Como hubo ruidos extraños a las 5:33 tiene sentido pensar que la muerte pudo haber ocurrido cerca de esa hora, y además no pudo haber ocurrido luego de las 5:52 ya que la policía lo hubiera notado. Entonces se plantea la siguiente distribución a *priori*:
 
-
 $$h_m \sim (-1)*Gamma(5,0.1)+5.883$$
+
 ```{r, echo = FALSE, fig.cap = "Distribución a priori de la hora de muerte"}
 seq_h_m = seq(0,1.5,length.out = 1000)
 df_h_m = data.frame(y = dgamma(seq_h_m, shape = 5, scale = 0.1), x = -1 * seq_h_m + 5.883)
@@ -244,23 +226,17 @@ ggplot(df_h_m) + geom_line(aes(x = x, y = y)) +
   theme_bw()
 ```
 
-
-
 ## $\boldsymbol{\sigma}$: Error de medición
 
+Al investigar sobre el error de medición para la temperatura, se encuentra que el error máximo de un termómetro es de 0.7 ºC, entonces se calcula la diferencia entre el logaritmo natural de una temperatura $T$ y la temperatura con su error máximo: $$ln(T+0.7)-ln(T) = ln(\frac{T+0.7}{T}) = ln(1+\frac{0.7}{T})$$ Y esta expresión será máxima cuando T sea mínimo, es decir, $T=22$. Entonces,
 
-Al investigar sobre el error de medición para la temperatura, se encuentra que el error máximo de un termómetro es de 0.7 ºC, entonces se calcula la diferencia entre el logaritmo natural de una temperatura $T$ y la temperatura con su error máximo:
-$$ln(T+0.7)-ln(T) = ln(\frac{T+0.7}{T}) = ln(1+\frac{0.7}{T})$$
-Y esta expresión será máxima cuando T sea mínimo, es decir, $T=22$. Entonces,
 ```{r, echo = FALSE}
 sigma_max = log(1+0.7/22)
 ```
 
-$$ln(1+\frac{0.7}{22}) \approx 0.03 $$
-Por lo tanto,  el *prior* resultante es:
+$$ln(1+\frac{0.7}{22}) \approx 0.03 $$ Por lo tanto, el *prior* resultante es:
 
-$$\sigma \sim Normal_+(0,0.01)$$ 
-
+$$\sigma \sim Normal_+(0,0.01)$$
 
 ```{r, echo = FALSE, fig.cap = "Distribución a priori del error de medición"}
 seq_sigma = seq(-0.033,0.033,length.out = 1000)
@@ -268,12 +244,12 @@ df_sigma = data.frame(y = 2*abs(dnorm(seq_sigma, 0, 0.01)), x = abs(seq_sigma))
 ggplot(df_sigma) + geom_line(aes(x = x, y = y)) + scale_x_continuous(name = "Sigma", breaks = round(seq(0,sigma_max,length.out = 4),3))  + scale_y_continuous(name = "Densidad") +
   theme_bw()
 ```
+
 Donde dichos valores representan el error de medición en términos del porcentaje de la temperatura medida.
 
 ## Descenso de la temperaruta a *priori*
 
 Una vez definidas las distribuciones a *priori* de todos los parámetros de los que depende el cambio de temperatura del cuerpo a través del tiempo, esta se puede graficar para determinar si lo que uno supone es razonable.
-
 
 ```{r, echo = FALSE, fig.cap = "Distribución a priori de la temperatura del cuerpo de Sergio"}
 set.seed(1997)
@@ -331,23 +307,18 @@ ggplot(data_mu_prior) +
 
 
 ```
+
 En la figura 7 se observa que entre las 4:30 y las 6:00 es donde el cuerpo tiene una temperatura normal para una persona viva, es decir, se esta prediciendo a la hora de muerte en ese rango horario.
-
-
-
 
 # Capítulo 3: Ahora que se tiene más información ¿Cómo se utiliza?
 
 Después de volver de la estación de servicio, mientras los demás miembros del equipo sacan fotos y recogen pruebas de la escena, nuestro protagonista observa detenidamente el proceso reflexionando sobre el ambiente. -"¿Hoy es un día lúgubre porque ocurrió un asesinato, u ocurrió un asesinato porque es un día lúgubre?" Pero antes de poder continuar con su meditaciones, observa atentamente cómo el doctor le toma la temperatura al cadaver antes de envolverlo en una bolsa de óbito. -"Esta vez tiene una temperatura de 30.5 ºC." dice el doctor con súbito sosiego. -"Ahora lo transportan a la morgue en Capital para que le hagan la autopsia. ¿Querés los resultados de la autopsia?". "Bueno doc, pero no le veo profunda utilidad a dicha información.". Al tener todos los datos que creia necesario, Guido suspira con anticipo y se dirige al auto para que lo devuelvan a su casa.
 
-
 ## *Posterior* de los parámetros con una observación
 
 Si se utiliza toda la información postulada en el capítulo 2, se puede plantear el siguiente modelo con los supuestos detallados en el mismo capítulo.
 
-$$Y_i|\beta_0, \beta_1, h_m,\sigma \sim Normal(\mu_i,\sigma)$$ 
-Con: $\mu_i = \beta_0 + \beta_1  (h_i-h_m)$
-
+$$Y_i|\beta_0, \beta_1, h_m,\sigma \sim Normal(\mu_i,\sigma)$$ Con: $\mu_i = \beta_0 + \beta_1 (h_i-h_m)$
 
 La temperatura del cuerpo a las 6:45 es de 32.8 ºC, es decir, $h_1=6.75$ y $Y_1=ln(32.8-22)=2.55$. Entonces, se obtiene la distribución a posteriori del modelo al incorporar esta información. Esto se logra mediante la aplicación del algoritmo Hamiltonian Montecarlo a través del lenguaje Stan.
 
@@ -357,9 +328,10 @@ modelo1obs %>%
   setNames(c("Beta 0", "Beta1", "Sigma", "Hora de la muerte", "5", "6", "7", "8"))  %>% 
   traceplot(pars = c("b0", "b1", "sigma", "x")) + labs(colour="Cadenas")
 ```
+
 Todos los parámetros tienen un $\hat{R}$ igual a 1, por lo que las distintas cadenas convergen a la misma distribución. Además, las trazas para cada cadena parece seguir un orden aleatorio por lo que se considera que la muestra extraída es representativa de la distribución del *posterior*. Algunas medidas de las muestras extraídas son:
 
-
+```{=tex}
 \begin{table}[H]
 \begin{center}
 \begin{tabular}{|l|l|l|l|l|}
@@ -374,10 +346,7 @@ $h_m$     & 5.06  & 5.35  & 5.58   & 2636       \\ \hline
 \label{table:1}
 \end{center}
 \end{table}
-
-
-
-
+```
 Una vez ajustado el modelo, consecuentemente se obtiene la distribución a posteriori de la hora de muerte de Sergio.
 
 ```{r, echo = FALSE, fig.cap = "Distribución a posteriori de la hora de muerte"}
@@ -401,7 +370,7 @@ ic_1 = quantile(posterior1$x,c(.025, .5,.975))
 
 ```
 
-Utilizando solo la primera medición de la temperatura del cuerpo, con una probabilidad del 95%, la hora de muerte se encuentra entre las 5:04 y las 5:35, y su mediana es las 5:21. 
+Utilizando solo la primera medición de la temperatura del cuerpo, con una probabilidad del 95%, la hora de muerte se encuentra entre las 5:04 y las 5:35, y su mediana es las 5:21.
 
 Al incorporar nueva informarción, se redujo la incertidumbre sobre la hora de muerte de Sergio, pero al usar tan solo una observación, realmente no se puede obtener una mejoría sustancial de la creencia de los parámetros $\beta_0$, $\beta_1$ y $\sigma$, ya que estos necesitan más de una observación para poder ser estimados correctamente, y por lo tanto, reducir la incerteza sobre ellos.
 
@@ -411,7 +380,6 @@ grafico_post_b0_1 = data.frame(x = c(as.numeric(posterior1$b0),rnorm(27000,2.69,
 ggplot(grafico_post_b0_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5) +  scale_fill_discrete(name = "", labels = c("1 observación", "Prior")) + scale_x_continuous(name = "Beta0") + scale_y_continuous(name = "Densidad") + theme_bw() + theme(legend.position = "top")
 
 ```
-
 
 ```{r, echo = FALSE, fig.cap = "Distribución a posteriori de beta1"}
 grafico_post_b1_1 = data.frame(x = c(as.numeric(posterior1$b1),rnorm(27000,-0.248,0.018)), color = rep(c("Posterior", "Prior"), each = 27000))
@@ -432,7 +400,6 @@ ggplot(grafico_post_sigma_1)+ geom_density(aes(x = x, fill = color), alpha = 0.5
   theme(legend.position = "top")
 
 ```
-
 
 Al actualizar el modelo con una observación y realizar la transformación necesaria para volver a la escala original, se obtiene la siguiente predicción de la temperatura de Sergio a traves del tiempo.
 
@@ -490,15 +457,13 @@ ggplot() +
 
 Al tener una sola observación, no se puede obtener una representación fidedigna de la hora de muerte.
 
-# Capítulo 4: No siempre es bueno usar protección
+# Capítulo 4: 
 
-Luego de volver a su casa Guido se prepara un café y comienza a armar el informe sobre el caso. Utilizando toda la información que recolectó llega a una hora de muerte estimada. Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Al ser de carácter curioso, Guido decide ver qué pasaría si agrega esta observación a su análisis. "-Como sospechaba, no es útil esto." dice el joven con un aire de confianza. "Supongo que solo queda mandar el informe."
-
+Luego de volver a su casa Guido se prepara un café y comienza a armar el informe sobre el caso. Utilizando toda la información que recolectó, estimada la hora de muerte de Sergio.  Luego, por la tarde, le llega a su casilla de mail los resultados de la autopsia con una temperatura del cuerpo de 23.7 ºC al momento de hacer la autopsia. Con un semblante de confianza, Guido decide agregar esta observación a su análisis. En menos de lo que canta un gallo, toda su seguridad en si mismo desaparece inadvertidamente.
 
 ## *Posterior* de los parámetros con dos observaciones
 
 En el capítulo anterior se trabajó con toda la información obtenida hasta el capítulo 2, pero es un sinsentido no utilizar la totalidad de lo que se sabe. Incorporando al modelo la segunda observación de 30.5 ºC de temperatura del cuerpo a las 8:15, se obtienen los siguientes resultados.
-
 
 ```{r, echo = FALSE, fig.cap = "Trazas de las cadenas de cada parámetro para el modelo con dos observaciones"}
 modelo2obs %>% 
@@ -506,10 +471,9 @@ modelo2obs %>%
   traceplot(pars = c("b0", "b1", "sigma", "x")) + labs(colour="Cadenas")
 ```
 
-
 Todos los parámetros tienen un $\hat{R}$ igual a 1, por lo que las distintas cadenas convergen a la misma distribución. Además, los saltos entre iteraciones parecen hacerse de manera aleatoria por lo que se considera que las muestras extraídas de los *posteriors* son buenas.
 
-
+```{=tex}
 \begin{table}[H]
 \begin{center}
 \begin{tabular}{|l|l|l|l|l|}
@@ -524,7 +488,7 @@ $h_m$     & 4.67  & 5.09  & 5.49   & 5222       \\ \hline
 \label{table:1}
 \end{center}
 \end{table}
-
+```
 Para observar mejor los cambios de los *posteriors* entre el modelo ajustado con una observación y el ajustado con dos, se presentan los siguientes gráficos:
 
 ```{r, echo = FALSE, fig.cap = "Comparación de los posteriors"}
@@ -575,10 +539,6 @@ ic_2 = quantile(posterior2$x, c(.025, .5, .975))
 ```
 
 En la figura 15 se observa que los *posteriors* de $\beta_1$, $\sigma$ y la hora de muerte cambian sustancialmente. La distribución de $\beta_1$ se traslada hacia la derecha, por lo que la velocidad a la que el cuerpo pierde calor es menor. A la distribución de $\sigma$ le ocurre lo mismo, por lo que el error de medición será más grande. Y por último, la creencia de la hora de muerte se ve desplazada a la izquierda y se torna más variable, por lo tanto, el nuevo intervalo de confianza para ella será de las 4:40 y las 5:29.
-
-
-
-
 
 Al actualizar el modelo con la segunda observación y realizar la transformación necesaria para volver a la escala original, se obtiene la siguiente predicción de la temperatura de Sergio a traves del tiempo.
 
@@ -639,9 +599,7 @@ ggplot() +
 
 ```
 
-
 Para garantizar de que el ajuste es correcto, se realiza una validación interna donde se obtienen réplicas de la medición de la temperatura para distintas temperaturas posibles del cuerpo de Sergio en el momento que se obtuvieron los datos reales y comparándolos.
-
 
 ```{r, echo = FALSE, fig.cap = "Validación interna de los datos observados", warning = FALSE}
 # ----------- CON ZOOM ------------------
@@ -692,9 +650,7 @@ modelo3obs %>%
 
 Todos los parámetros tienen un $\hat{R}$ igual a 1, por lo que las distintas cadenas convergen a la misma distribución. Las trazas de cada cadena parecieran distribuirse aleatoriamente por el espacio de probabilidades logrando así una buena representatividad del *posterior*. Algunas de las características de dichas distribuciones son las siguientes:
 
-
-
-
+```{=tex}
 \begin{table}[H]
 \begin{center}
 \begin{tabular}{|l|l|l|l|l|}
@@ -709,7 +665,7 @@ $h_m$     & 5.29  & 5.55  & 5.75   & 11634       \\ \hline
 \label{table:1}
 \end{center}
 \end{table}
-
+```
 En un principio, no se ve nada raro con las estimaciones del *posterior* en este nuevo modelo. Por lo que se procede a compararlo con el anterior modelo:
 
 ```{r, echo = FALSE, fig.cap = "Comparación de los posteriors"}
@@ -822,10 +778,12 @@ ggplot() +
 
 Según el modelo con 3 observaciones, la distribución de la temperatura del cuerpo de Sergio estimada no coincide con los datos observados. Esto es un indicio de que el modelo planteado no se ajusta bien al comportamiento observado. Puede haber dos razones para explicar este malfuncionamiento del modelo: la primera es que alguno/s de los datos observados son erróneos, por ejemplo, el cuerpo fue expuesto a diferentes condiciones que modifican el intercambio de temperatura con el ambiente, y la segunda razón, que el modelo planteado no sea correcto para representar dicho intercambio.
 
+# Capítulo 5: "D.e.a.t.h." Divagaciones entre aficionados tanteando hipótesis  
 
-# Capítulo 5: Divagaciones de un 
+"-Quien hubiera pensado que la muerte fuera tan compleja." dice Guido sarcasticamente, castigandose a si mismo por no haber podido contener a su propia desmedida arrogancia de ser motivo de semejante desidia. Sintiendose tonto por pensar que en su primer trabajo todo iba a salir bien, Guido continua trabajando hasta tarde para poder entregar su informe a tiempo.
 
-Guido se pone a llorar, Guido no es 100tífico
+
+
 
 Indudablemente, el modelo con 3 observaciones no es uno que se pueda usar para realizar una estimación certera de la hora muerte. Una de las posibles causas es que la última medición de la temperatura de Sergio no es verídica. Al cambiar las condiciones donde el cuerpo reside y además perder el seguimiento hasta su autopsia, las posibilidades de que la última medición sea incorrecta son altas.
 
@@ -837,9 +795,7 @@ Adicionalmente, todos los modelos propuestos suponen que Sergio se encontraba en
 
 Entonces, ¿Cuándo murió Sergio?
 
+# Epílogo: 
 
-
-# Epílogo
-
-
+Luego de entregar su informe, Guido sintio una sensación ambivalente de satisfacción y disconformidad "-Al menos ya todo termino." dice el fatigado estudiante y sin ningun tipo de reparo en su vestimenta, se desploma en su lecho para poder tener una ganadas horas de sueño.
 
