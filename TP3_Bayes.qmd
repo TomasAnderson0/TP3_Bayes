@@ -32,9 +32,17 @@ LICENCIATURA EN ESTADÍSTICA
 Trabajo Práctico 3 \vspace{1cm}
 
 ```{=tex}
-\begin{center}
+\begin{figure}[h!]
+\centering
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=10cm, height=8cm]{foto_1.png}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=10cm, height=8cm]{foto_3.jpg}
+  \end{subfigure}
+\setcounter{figure}{0}    
+\end{figure}
 
-\end{center}
 \vspace{2cm}
 ```
 Autores: Tomás Anderson - Alejo Vaschetti - Manuel Moresi
@@ -506,7 +514,7 @@ plot_post12_1 = ggplot(posterior12) +
   scale_y_continuous(name = "Densidad") +
   scale_x_continuous(name = "Beta 0") +
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "top", legend.text = element_text(size = 8))
 
 plot_post12_2 = ggplot(posterior12) +
   aes(x = b1, fill = observaciones) + 
@@ -515,7 +523,7 @@ plot_post12_2 = ggplot(posterior12) +
   scale_y_continuous(name = "Densidad") +
   scale_x_continuous(name = "Beta 1") +
   theme_bw() +
-  theme(legend.position = "top") 
+  theme(legend.position = "top", legend.text = element_text(size = 8))
 
 plot_post12_3 = ggplot(posterior12) +
   aes(x = sigma, fill = observaciones) +
@@ -524,7 +532,7 @@ plot_post12_3 = ggplot(posterior12) +
   scale_y_continuous(name = "Densidad") +
   scale_x_continuous(name = "Sigma") +
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "top", legend.text = element_text(size = 8))
 
 plot_post12_4 = ggplot(posterior12) +
   aes(x = x, fill = observaciones) +
@@ -533,7 +541,7 @@ plot_post12_4 = ggplot(posterior12) +
   scale_y_continuous(name = "Densidad") +
   scale_x_continuous(name = "Hora de muerte") + 
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "top", legend.text = element_text(size = 8))
 
 grid.arrange(plot_post12_1,plot_post12_2,plot_post12_3,plot_post12_4)
 
@@ -682,7 +690,7 @@ plot_post23_1 = ggplot(posterior23) +
   scale_y_continuous(name = "Densidad") +
   scale_x_continuous(name = "Beta 0") +
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "top", legend.text = element_text(size = 7))
 
 plot_post23_2 = ggplot(posterior23) +
   aes(x = b1, fill = observaciones) + 
@@ -691,7 +699,7 @@ plot_post23_2 = ggplot(posterior23) +
   scale_y_continuous(name = "Densidad") +
   scale_x_continuous(name = "Beta 1") +
   theme_bw() +
-  theme(legend.position = "top") 
+  theme(legend.position = "top", legend.text = element_text(size = 7))
 
 plot_post23_3 = ggplot(posterior23) +
   aes(x = sigma, fill = observaciones) +
@@ -700,7 +708,7 @@ plot_post23_3 = ggplot(posterior23) +
   scale_y_continuous(name = "Densidad") +
   scale_x_continuous(name = "Sigma") +
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "top", legend.text = element_text(size = 7))
 
 plot_post23_4 = ggplot(posterior23) +
   aes(x = x, fill = observaciones) +
@@ -709,7 +717,7 @@ plot_post23_4 = ggplot(posterior23) +
   scale_y_continuous(name = "Densidad") +
   scale_x_continuous(name = "Hora de muerte") + 
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "top", legend.text = element_text(size = 7))
 
 grid.arrange(plot_post23_1,plot_post23_2,plot_post23_3,plot_post23_4)
 
@@ -720,7 +728,7 @@ Los *posteriors* de ambos modelos se encuentran muy desplazados entre sí, excep
 
 Estos grandes cambios al actualizar el *posterior* con un único dato no se deben pasar por alto, ya que no resultan del todo lógico, por lo que se procede a hacer una validación interna del modelo.
 
-```{r, echo = FALSE, fig.cap = "Validación interna del modelo con 3 observaciones"}
+```{r, echo = FALSE, fig.cap = "Validación interna del modelo con 3 observaciones", warning = FALSE}
 predicciones3 <- data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,1]) + 22, x = 6.75)
 predicciones3 <- rbind(data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,2]) + 22, x = 8.25), predicciones3)
 predicciones3 <- rbind(data.frame(y = exp(extract(modelo3obs, "log_dif_temp")$log_dif_temp[,3]) + 22, x = 13.5), predicciones3)
@@ -809,6 +817,6 @@ Si se tuviese que elegir algún modelo de los planteados para predecir la hora d
 
 # Anexo
 
-Lo còdigos para generar este trabajo se encuentran en el siguiente repositorio:
+Lo códigos para generar este trabajo se encuentran en el siguiente repositorio:
 
 https://github.com/TomasAnderson0/TP3_Bayes
